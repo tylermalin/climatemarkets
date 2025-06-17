@@ -35,10 +35,12 @@ export function OrderBook({ orderBook, onPlaceOrder }: OrderBookProps) {
       {/* Spread Indicator */}
       <div className="text-center py-2 text-sm text-gray-500">
         Spread: $
-        {(
-          Math.min(...orderBook.asks.map(a => a.price)) -
-          Math.max(...orderBook.bids.map(b => b.price))
-        ).toFixed(2)}
+        {orderBook.asks.length && orderBook.bids.length
+          ? (
+              Math.min(...orderBook.asks.map((a) => a.price)) -
+              Math.max(...orderBook.bids.map((b) => b.price))
+            ).toFixed(2)
+          : 'N/A'}
       </div>
 
       {/* Bids (Buy Orders) */}
