@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import { WagmiConfig, createConfig, configureChains } from 'wagmi';
 import { mainnet, polygon } from 'wagmi/chains';
@@ -166,20 +166,20 @@ function App() {
           <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-8">
-                <div className="flex items-center">
+                <Link to="/" className="flex items-center">
                   <Globe2 className="h-8 w-8 text-green-500" />
                   <h1 className="ml-2 text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
                     Climate Markets
                   </h1>
-                </div>
+                </Link>
                 <nav className="hidden md:flex space-x-6">
-                  <a href="/category/trending" className="text-sm text-gray-300 hover:text-white">Trending</a>
-                  <a href="/category/temperature" className="text-sm text-gray-300 hover:text-white">Temperature</a>
-                  <a href="/category/precipitation" className="text-sm text-gray-300 hover:text-white">Precipitation</a>
-                  <a href="/category/emissions" className="text-sm text-gray-300 hover:text-white">Emissions</a>
-                  <a href="/category/disasters" className="text-sm text-gray-300 hover:text-white">Natural Disasters</a>
-                  <a href="/category/records" className="text-sm text-gray-300 hover:text-white">Records</a>
-                  <a href="/wallet" className="text-sm text-blue-400 hover:text-blue-300">Wallet</a>
+                  <Link to="/category/trending" className="text-sm text-gray-300 hover:text-white">Trending</Link>
+                  <Link to="/category/temperature" className="text-sm text-gray-300 hover:text-white">Temperature</Link>
+                  <Link to="/category/precipitation" className="text-sm text-gray-300 hover:text-white">Precipitation</Link>
+                  <Link to="/category/emissions" className="text-sm text-gray-300 hover:text-white">Emissions</Link>
+                  <Link to="/category/disasters" className="text-sm text-gray-300 hover:text-white">Natural Disasters</Link>
+                  <Link to="/category/records" className="text-sm text-gray-300 hover:text-white">Records</Link>
+                  <Link to="/wallet" className="text-sm text-blue-400 hover:text-blue-300">Wallet</Link>
                 </nav>
               </div>
               <div className="flex items-center space-x-6">
