@@ -16,34 +16,50 @@ import type { PredictionMarket } from './types/climate';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables. Please check your .env file.');
+// Only create Supabase client if we have valid credentials
+const supabase = supabaseUrl && supabaseKey && !supabaseUrl.includes('your_supabase') && !supabaseKey.includes('your_supabase')
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
+
+if (!supabase) {
+  console.warn('Supabase not configured. Please add your Supabase credentials to the .env file.');
 }
 
-const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-);
-
 // Configure Web3
-const projectId = import.meta.env.VITE_WEB3_MODAL_PROJECT_ID || 'YOUR_WEB3_MODAL_PROJECT_ID';
+const projectId = import.meta.env.VITE_WEB3_MODAL_PROJECT_ID;
 const chains = [mainnet, polygon];
 
-const { chains: configuredChains } = configureChains(
-  chains,
-  [walletConnectProvider({ projectId })]
-);
+let config: any;
+let isWeb3Configured = false;
 
-const config = createConfig({
-  autoConnect: true,
-  chains: configuredChains,
-});
+// Only configure Web3 if we have a valid project ID
+if (projectId && projectId !== 'YOUR_WEB3_MODAL_PROJECT_ID' && !projectId.includes('your_web3')) {
+  const { chains: configuredChains } = configureChains(
+    chains,
+    [walletConnectProvider({ projectId })]
+  );
 
-createWeb3Modal({
-  wagmiConfig: config,
-  projectId,
-  chains,
-});
+  config = createConfig({
+    autoConnect: true,
+    chains: configuredChains,
+  });
+
+  createWeb3Modal({
+    wagmiConfig: config,
+    projectId,
+    chains,
+  });
+  
+  isWeb3Configured = true;
+} else {
+  console.warn('Web3Modal not configured. Please add your project ID to the .env file.');
+  
+  // Create a simple config for when Web3Modal is not configured
+  config = createConfig({
+    autoConnect: true,
+    chains: chains,
+  });
+}
 
 function App() {
   const [markets, setMarkets] = useState<PredictionMarket[]>([]);
@@ -62,6 +78,34 @@ function App() {
   }, []);
 
   async function fetchMarkets() {
+    if (!supabase) {
+      console.warn('Supabase not configured. Using mock data.');
+      // Set some mock data for development
+      setMarkets([
+        {
+          id: '1',
+          title: 'Global Temperature 2024',
+          description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
+          current_price: 0.75,
+          volume: 125000,
+          end_date: '2024-12-31',
+          category: 'temperature',
+          created_at: '2024-01-01'
+        },
+        {
+          id: '2',
+          title: 'Carbon Emissions Target',
+          description: 'Will global carbon emissions decrease by 5% in 2024?',
+          current_price: 0.45,
+          volume: 89000,
+          end_date: '2024-12-31',
+          category: 'emissions',
+          created_at: '2024-01-01'
+        }
+      ]);
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('prediction_markets')
@@ -125,7 +169,7 @@ function App() {
                   <Search className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
                 </div>
                 <Bell className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer transition-colors" />
-                <w3m-button />
+                {isWeb3Configured && <w3m-button />}
               </div>
             </div>
           </div>

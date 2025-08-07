@@ -9,14 +9,14 @@ import type { PredictionMarket } from '../types/climate';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables. Please check your .env file.');
-}
+// Only create Supabase client if we have valid credentials
+const supabase = supabaseUrl && supabaseKey && !supabaseUrl.includes('your_supabase') && !supabaseKey.includes('your_supabase')
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
-const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-);
+if (!supabase) {
+  console.warn('Supabase not configured. Please add your Supabase credentials to the .env file.');
+}
 
 const categoryConfigs = {
   trending: {
@@ -72,6 +72,45 @@ export function CategoryPage() {
     if (!config) return;
     
     async function fetchMarkets() {
+      if (!supabase) {
+        console.warn('Supabase not configured. Using mock data.');
+        // Set some mock data for development
+        const mockMarkets = [
+          {
+            id: '1',
+            title: 'Global Temperature 2024',
+            description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
+            current_price: 0.75,
+            volume: 125000,
+            end_date: '2024-12-31',
+            category: 'temperature',
+            created_at: '2024-01-01'
+          },
+          {
+            id: '2',
+            title: 'Carbon Emissions Target',
+            description: 'Will global carbon emissions decrease by 5% in 2024?',
+            current_price: 0.45,
+            volume: 89000,
+            end_date: '2024-12-31',
+            category: 'emissions',
+            created_at: '2024-01-01'
+          }
+        ];
+        
+        const filteredMarkets = mockMarkets
+          .filter(config.filter)
+          .filter(market => 
+            searchQuery === '' ||
+            market.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            market.description.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+        
+        setMarkets(filteredMarkets);
+        setLoading(false);
+        return;
+      }
+
       try {
         const { data, error } = await supabase
           .from('prediction_markets')
