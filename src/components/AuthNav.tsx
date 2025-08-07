@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Wallet, User, LogIn, UserPlus, LogOut, Settings, Bell } from 'lucide-react';
+import { LoginModal } from './LoginModal';
 
 interface AuthNavProps {
   isConnected: boolean;
@@ -13,9 +14,30 @@ interface AuthNavProps {
 export function AuthNav({ isConnected, userAddress, onConnect, onDisconnect }: AuthNavProps) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
 
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  const handleLogin = (email: string, password: string) => {
+    console.log('Login with email:', email);
+    setUserEmail(email);
+    setShowAuthModal(false);
+  };
+
+  const handleSignup = (email: string, password: string, name: string) => {
+    console.log('Signup with email:', email, 'name:', name);
+    setUserEmail(email);
+    setUserName(name);
+    setShowAuthModal(false);
+  };
+
+  const handleWalletConnect = () => {
+    console.log('Connecting wallet...');
+    onConnect();
+    setShowAuthModal(false);
   };
 
   return (
@@ -111,62 +133,13 @@ export function AuthNav({ isConnected, userAddress, onConnect, onDisconnect }: A
       </div>
 
       {/* Auth Modal */}
-      {showAuthModal && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-          onClick={() => setShowAuthModal(false)}
-        >
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-md mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center mb-6">
-              <h2 className="text-xl font-bold text-white mb-2">Welcome to Climate Markets</h2>
-              <p className="text-gray-400 text-sm">
-                Connect your wallet to start trading climate predictions
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <button
-                onClick={onConnect}
-                className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 transition-colors"
-              >
-                <Wallet className="h-5 w-5 text-white" />
-                <span className="text-white font-medium">Connect Wallet</span>
-              </button>
-
-              <div className="text-center">
-                <span className="text-gray-400 text-sm">or</span>
-              </div>
-
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">
-                  <LogIn className="h-5 w-5 text-gray-400" />
-                  <span className="text-gray-300">Log In with Email</span>
-                </button>
-                <button className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg bg-green-600 hover:bg-green-700 transition-colors">
-                  <UserPlus className="h-5 w-5 text-white" />
-                  <span className="text-white font-medium">Sign Up with Email</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-6 text-center">
-              <button
-                onClick={() => setShowAuthModal(false)}
-                className="text-gray-400 hover:text-gray-300 text-sm"
-              >
-                Cancel
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
+      <LoginModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onLogin={handleLogin}
+        onSignup={handleSignup}
+        onWalletConnect={handleWalletConnect}
+      />
     </>
   );
 }
