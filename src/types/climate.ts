@@ -6,6 +6,13 @@ export interface MarketCategory {
   created_at: string;
 }
 
+export interface MarketOutcome {
+  id: string;
+  label: string;
+  probability: number;
+  volume: number;
+}
+
 export interface PredictionMarket {
   id: string;
   category_id: string;
@@ -23,6 +30,7 @@ export interface PredictionMarket {
   sustainability_fee_percentage: number;
   created_at: string;
   updated_at: string;
+  outcomes?: MarketOutcome[];
 }
 
 export interface MarketPricePoint {

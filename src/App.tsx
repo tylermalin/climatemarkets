@@ -337,6 +337,68 @@ function App() {
             updated_at: '2024-01-01T00:00:00Z'
           },
           {
+            id: '16',
+            category_id: 'disasters',
+            title: '🌪️ Cat 3+ Hurricane Hits Miami in 2025',
+            description: 'Will a Category 3 or stronger hurricane make landfall in Miami, Florida in 2025?',
+            target_date: '2025-11-30T23:59:59Z',
+            current_price: 0.19,
+            volume: 15000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+            ],
+            resolution_criteria: 'Official hurricane landfall data from National Hurricane Center',
+            sustainability_fee_percentage: 2.5,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '17',
+            category_id: 'disasters',
+            title: '🌊 Atlantic Hurricane Season Named Storms 2025',
+            description: 'How many named storms will occur during the 2025 Atlantic Hurricane Season?',
+            target_date: '2025-11-30T23:59:59Z',
+            current_price: 0.39,
+            volume: 205000,
+            country: 'Atlantic',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+            ],
+            resolution_criteria: 'Official named storm count from National Hurricane Center',
+            sustainability_fee_percentage: 2.5,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+            // Multi-outcome market for named storms
+            outcomes: [
+              { id: '17a', label: '<12', probability: 0.06, volume: 12300 },
+              { id: '17b', label: '12-15', probability: 0.22, volume: 45100 },
+              { id: '17c', label: '16-19', probability: 0.39, volume: 79950 },
+              { id: '17d', label: '20-23', probability: 0.17, volume: 34850 },
+              { id: '17e', label: '>23', probability: 0.12, volume: 32800 }
+            ]
+          },
+          {
+            id: '18',
+            category_id: 'disasters',
+            title: '🌀 Cat 5 Hurricane US Landfall 2025',
+            description: 'Will a Category 5 hurricane make landfall in the United States during the 2025 Hurricane Season?',
+            target_date: '2025-11-30T23:59:59Z',
+            current_price: 0.11,
+            volume: 22000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+            ],
+            resolution_criteria: 'Official hurricane landfall data from National Hurricane Center',
+            sustainability_fee_percentage: 2.5,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
             id: '14',
             category_id: 'records',
             title: '🌡️ Death Valley — Hottest Temperature on Earth in 2025',

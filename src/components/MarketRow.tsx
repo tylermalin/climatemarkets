@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { PredictionMarket } from '../types/climate';
 import { MarketTile } from './MarketTile';
+import { HurricaneMarketCard } from './HurricaneMarketCard';
 
 interface MarketRowProps {
   title: string;
@@ -39,9 +40,15 @@ export function MarketRow({ title, markets, id }: MarketRowProps) {
           }}
         >
           <div className="flex gap-4 pb-4">
-            {markets.map((market) => (
-              <MarketTile key={market.id} market={market} />
-            ))}
+            {markets.map((market) => {
+              // Use HurricaneMarketCard for hurricane-related markets
+              if (market.title.toLowerCase().includes('hurricane') || 
+                  market.title.toLowerCase().includes('cat') ||
+                  market.title.toLowerCase().includes('storm')) {
+                return <HurricaneMarketCard key={market.id} market={market} />;
+              }
+              return <MarketTile key={market.id} market={market} />;
+            })}
           </div>
         </div>
         
