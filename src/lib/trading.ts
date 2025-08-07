@@ -4,16 +4,34 @@ import type { MarketOrder, MarketTrade, OrderBook } from '../types/trading';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables. Please check your .env file.');
+// Only create Supabase client if we have valid credentials
+const supabase = supabaseUrl && supabaseKey && !supabaseUrl.includes('your_supabase') && !supabaseKey.includes('your_supabase')
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
+
+if (!supabase) {
+  console.warn('Supabase not configured. Please add your Supabase credentials to the .env file.');
 }
 
-const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-);
-
 export async function getOrderBook(marketId: string): Promise<OrderBook> {
+  if (!supabase) {
+    console.warn('Supabase not configured. Using mock order book data.');
+    return {
+      bids: [
+        { price: 0.85, size: 500, total: 425 },
+        { price: 0.84, size: 400, total: 336 },
+        { price: 0.83, size: 300, total: 249 },
+        { price: 0.82, size: 200, total: 164 },
+      ],
+      asks: [
+        { price: 0.89, size: 100, total: 89 },
+        { price: 0.88, size: 200, total: 176 },
+        { price: 0.87, size: 300, total: 261 },
+        { price: 0.86, size: 400, total: 344 },
+      ]
+    };
+  }
+
   const { data: orders, error } = await supabase
     .from('market_orders')
     .select('*')
@@ -62,6 +80,18 @@ export async function getOrderBook(marketId: string): Promise<OrderBook> {
 }
 
 export async function placeOrder(order: Omit<MarketOrder, 'id' | 'filled_size' | 'status' | 'created_at' | 'updated_at'>): Promise<MarketOrder> {
+  if (!supabase) {
+    console.warn('Supabase not configured. Mock order placement.');
+    return {
+      ...order,
+      id: 'mock-order-' + Date.now(),
+      filled_size: 0,
+      status: 'open',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    } as MarketOrder;
+  }
+
   const { data, error } = await supabase
     .from('market_orders')
     .insert([{
@@ -77,6 +107,11 @@ export async function placeOrder(order: Omit<MarketOrder, 'id' | 'filled_size' |
 }
 
 export async function cancelOrder(orderId: string, userId: string): Promise<void> {
+  if (!supabase) {
+    console.warn('Supabase not configured. Mock order cancellation.');
+    return;
+  }
+
   const { error } = await supabase
     .from('market_orders')
     .update({ status: 'cancelled' })
@@ -87,6 +122,11 @@ export async function cancelOrder(orderId: string, userId: string): Promise<void
 }
 
 export async function getUserOrders(userId: string): Promise<MarketOrder[]> {
+  if (!supabase) {
+    console.warn('Supabase not configured. Using mock user orders.');
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('market_orders')
     .select('*')
@@ -98,6 +138,11 @@ export async function getUserOrders(userId: string): Promise<MarketOrder[]> {
 }
 
 export async function getUserTrades(userId: string): Promise<MarketTrade[]> {
+  if (!supabase) {
+    console.warn('Supabase not configured. Using mock user trades.');
+    return [];
+  }
+
   const { data, error } = await supabase
     .from('market_trades')
     .select('*')

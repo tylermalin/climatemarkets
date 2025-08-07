@@ -22,14 +22,14 @@ import type { PredictionMarket, MarketPricePoint, OrderBook as OrderBookType } f
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables. Please check your .env file.');
-}
+// Only create Supabase client if we have valid credentials
+const supabase = supabaseUrl && supabaseKey && !supabaseUrl.includes('your_supabase') && !supabaseKey.includes('your_supabase')
+  ? createClient(supabaseUrl, supabaseKey)
+  : null;
 
-const supabase = createClient(
-  supabaseUrl || '',
-  supabaseKey || ''
-);
+if (!supabase) {
+  console.warn('Supabase not configured. Please add your Supabase credentials to the .env file.');
+}
 
 // Mock order book data
 const mockOrderBook: OrderBookType = {
@@ -60,6 +60,32 @@ export function MarketPage() {
     if (!id) return;
     
     async function fetchMarketData() {
+      if (!supabase) {
+        console.warn('Supabase not configured. Using mock data.');
+        // Set mock market data for development
+        const mockMarket: PredictionMarket = {
+          id: id || '1',
+          title: 'Global Temperature 2024',
+          description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
+          current_price: 0.75,
+          volume: 125000,
+          end_date: '2024-12-31',
+          category: 'temperature',
+          created_at: '2024-01-01'
+        };
+        
+        const mockPricePoints: MarketPricePoint[] = [
+          { id: '1', market_id: id || '1', price_point: 0.75, timestamp: '2024-01-01' },
+          { id: '2', market_id: id || '1', price_point: 0.74, timestamp: '2024-01-01' },
+          { id: '3', market_id: id || '1', price_point: 0.76, timestamp: '2024-01-01' }
+        ];
+        
+        setMarket(mockMarket);
+        setPricePoints(mockPricePoints);
+        setLoading(false);
+        return;
+      }
+
       try {
         const [marketResponse, pricePointsResponse] = await Promise.all([
           supabase
