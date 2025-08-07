@@ -7,4 +7,19 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
+  define: {
+    // Ensure environment variables are properly handled
+    'process.env': {}
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          wagmi: ['wagmi', '@wagmi/core'],
+          web3: ['@web3modal/wagmi', '@web3modal/react']
+        }
+      }
+    }
+  }
 });
