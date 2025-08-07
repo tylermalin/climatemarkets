@@ -43,8 +43,8 @@ A decentralized platform for trading climate prediction markets, built with Reac
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/climate-prediction-markets.git
-cd climate-prediction-markets
+git clone https://github.com/yourusername/climatemarkets.git
+cd climatemarkets
 ```
 
 2. Install dependencies:
