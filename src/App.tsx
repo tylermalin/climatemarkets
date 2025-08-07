@@ -16,6 +16,7 @@ import { HowItWorksPage } from './pages/HowItWorksPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
+import { FAQPage } from './pages/FAQPage';
 import { FeaturedMarket } from './components/FeaturedMarket';
 import { DeepLinkHandler } from './components/DeepLinkHandler';
 import { AuthNav } from './components/AuthNav';
@@ -403,6 +404,7 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/faq" element={<FAQPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/settings" element={<SettingsPage />} />
