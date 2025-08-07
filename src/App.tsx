@@ -9,7 +9,9 @@ import { Globe2, Search, Bell } from 'lucide-react';
 import { MarketRow } from './components/MarketRow';
 import { MarketPage } from './pages/MarketPage';
 import { CategoryPage } from './pages/CategoryPage';
+import { WalletPage } from './pages/WalletPage';
 import { FeaturedMarket } from './components/FeaturedMarket';
+import { DeepLinkHandler } from './components/DeepLinkHandler';
 import type { PredictionMarket } from './types/climate';
 
 // Initialize Supabase client
@@ -156,6 +158,7 @@ function App() {
   return (
     <WagmiConfig config={config}>
       <div className="min-h-screen bg-black text-white">
+        <DeepLinkHandler />
         {/* Netflix-style Header */}
         <header className={`fixed w-full z-50 transition-all duration-500 ${
           isScrolled ? 'bg-black' : 'bg-gradient-to-b from-black/80 to-transparent'
@@ -176,6 +179,7 @@ function App() {
                   <a href="/category/emissions" className="text-sm text-gray-300 hover:text-white">Emissions</a>
                   <a href="/category/disasters" className="text-sm text-gray-300 hover:text-white">Natural Disasters</a>
                   <a href="/category/records" className="text-sm text-gray-300 hover:text-white">Records</a>
+                  <a href="/wallet" className="text-sm text-blue-400 hover:text-blue-300">Wallet</a>
                 </nav>
               </div>
               <div className="flex items-center space-x-6">
@@ -231,6 +235,7 @@ function App() {
           } />
           <Route path="/market/:id" element={<MarketPage />} />
           <Route path="/category/:category" element={<CategoryPage />} />
+          <Route path="/wallet" element={<WalletPage />} />
         </Routes>
       </div>
     </WagmiConfig>
