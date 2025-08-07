@@ -81,28 +81,42 @@ function App() {
     if (!supabase) {
       console.warn('Supabase not configured. Using mock data.');
       // Set some mock data for development
-      setMarkets([
-        {
-          id: '1',
-          title: 'Global Temperature 2024',
-          description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
-          current_price: 0.75,
-          volume: 125000,
-          end_date: '2024-12-31',
-          category: 'temperature',
-          created_at: '2024-01-01'
-        },
-        {
-          id: '2',
-          title: 'Carbon Emissions Target',
-          description: 'Will global carbon emissions decrease by 5% in 2024?',
-          current_price: 0.45,
-          volume: 89000,
-          end_date: '2024-12-31',
-          category: 'emissions',
-          created_at: '2024-01-01'
-        }
-      ]);
+              setMarkets([
+          {
+            id: '1',
+            category_id: 'temperature',
+            title: 'Global Temperature 2024',
+            description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
+            target_date: '2024-12-31T23:59:59Z',
+            current_price: 0.75,
+            volume: 125000,
+            country: 'Global',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' }
+            ],
+            resolution_criteria: 'Based on global average temperature data from major meteorological organizations',
+            sustainability_fee_percentage: 2.5,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '2',
+            category_id: 'emissions',
+            title: 'Carbon Emissions Target',
+            description: 'Will global carbon emissions decrease by 5% in 2024?',
+            target_date: '2024-12-31T23:59:59Z',
+            current_price: 0.45,
+            volume: 89000,
+            country: 'Global',
+            verification_sources: [
+              { name: 'IEA', url: 'https://www.iea.org' }
+            ],
+            resolution_criteria: 'Based on official carbon emission reports from major economies',
+            sustainability_fee_percentage: 2.0,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          }
+        ]);
       return;
     }
 

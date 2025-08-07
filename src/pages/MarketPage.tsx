@@ -65,19 +65,47 @@ export function MarketPage() {
         // Set mock market data for development
         const mockMarket: PredictionMarket = {
           id: id || '1',
+          category_id: 'temperature',
           title: 'Global Temperature 2024',
           description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
+          target_date: '2024-12-31T23:59:59Z',
           current_price: 0.75,
           volume: 125000,
-          end_date: '2024-12-31',
-          category: 'temperature',
-          created_at: '2024-01-01'
+          country: 'Global',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' }
+          ],
+          resolution_criteria: 'Based on global average temperature data from major meteorological organizations',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
         };
         
         const mockPricePoints: MarketPricePoint[] = [
-          { id: '1', market_id: id || '1', price_point: 0.75, timestamp: '2024-01-01' },
-          { id: '2', market_id: id || '1', price_point: 0.74, timestamp: '2024-01-01' },
-          { id: '3', market_id: id || '1', price_point: 0.76, timestamp: '2024-01-01' }
+          { 
+            id: '1', 
+            market_id: id || '1', 
+            price_point: 0.75, 
+            probability: 75,
+            volume: 1000,
+            created_at: '2024-01-01T00:00:00Z' 
+          },
+          { 
+            id: '2', 
+            market_id: id || '1', 
+            price_point: 0.74, 
+            probability: 74,
+            volume: 800,
+            created_at: '2024-01-01T00:00:00Z' 
+          },
+          { 
+            id: '3', 
+            market_id: id || '1', 
+            price_point: 0.76, 
+            probability: 76,
+            volume: 1200,
+            created_at: '2024-01-01T00:00:00Z' 
+          }
         ];
         
         setMarket(mockMarket);
