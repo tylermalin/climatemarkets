@@ -19,9 +19,16 @@ import { OrderBook } from '../components/OrderBook';
 import { TradePanel } from '../components/TradePanel';
 import type { PredictionMarket, MarketPricePoint, OrderBook as OrderBookType } from '../types/climate';
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables. Please check your .env file.');
+}
+
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+  supabaseUrl || '',
+  supabaseKey || ''
 );
 
 // Mock order book data

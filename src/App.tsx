@@ -13,13 +13,20 @@ import { FeaturedMarket } from './components/FeaturedMarket';
 import type { PredictionMarket } from './types/climate';
 
 // Initialize Supabase client
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables. Please check your .env file.');
+}
+
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+  supabaseUrl || '',
+  supabaseKey || ''
 );
 
 // Configure Web3
-const projectId = 'YOUR_WEB3_MODAL_PROJECT_ID';
+const projectId = import.meta.env.VITE_WEB3_MODAL_PROJECT_ID || 'YOUR_WEB3_MODAL_PROJECT_ID';
 const chains = [mainnet, polygon];
 
 const { chains: configuredChains } = configureChains(

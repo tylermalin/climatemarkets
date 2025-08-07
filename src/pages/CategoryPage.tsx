@@ -6,9 +6,16 @@ import { motion } from 'framer-motion';
 import { MarketCard } from '../components/MarketCard';
 import type { PredictionMarket } from '../types/climate';
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase environment variables. Please check your .env file.');
+}
+
 const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+  supabaseUrl || '',
+  supabaseKey || ''
 );
 
 const categoryConfigs = {
