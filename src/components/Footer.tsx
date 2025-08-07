@@ -135,12 +135,12 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/disclaimer" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/risk-disclaimer" className="text-gray-400 hover:text-white transition-colors">
                   Risk Disclaimer
                 </Link>
               </li>
               <li>
-                <Link to="/cookies" className="text-gray-400 hover:text-white transition-colors">
+                <Link to="/cookie-policy" className="text-gray-400 hover:text-white transition-colors">
                   Cookie Policy
                 </Link>
               </li>
