@@ -10,9 +10,13 @@ import { MarketRow } from './components/MarketRow';
 import { MarketPage } from './pages/MarketPage';
 import { CategoryPage } from './pages/CategoryPage';
 import { WalletPage } from './pages/WalletPage';
+import { PrivacyPage } from './pages/PrivacyPage';
+import { TermsPage } from './pages/TermsPage';
+import { HowItWorksPage } from './pages/HowItWorksPage';
 import { FeaturedMarket } from './components/FeaturedMarket';
 import { DeepLinkHandler } from './components/DeepLinkHandler';
 import { AuthNav } from './components/AuthNav';
+import { Footer } from './components/Footer';
 import type { PredictionMarket } from './types/climate';
 
 // Initialize Supabase client
@@ -257,7 +261,13 @@ function App() {
           <Route path="/market/:id" element={<MarketPage />} />
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/wallet" element={<WalletPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/how-it-works" element={<HowItWorksPage />} />
         </Routes>
+        
+        {/* Footer */}
+        <Footer />
       </div>
     </WagmiConfig>
   );
