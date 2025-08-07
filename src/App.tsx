@@ -13,6 +13,9 @@ import { WalletPage } from './pages/WalletPage';
 import { PrivacyPage } from './pages/PrivacyPage';
 import { TermsPage } from './pages/TermsPage';
 import { HowItWorksPage } from './pages/HowItWorksPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { SettingsPage } from './pages/SettingsPage';
 import { FeaturedMarket } from './components/FeaturedMarket';
 import { DeepLinkHandler } from './components/DeepLinkHandler';
 import { AuthNav } from './components/AuthNav';
@@ -121,6 +124,113 @@ function App() {
               { name: 'IEA', url: 'https://www.iea.org' }
             ],
             resolution_criteria: 'Based on official carbon emission reports from major economies',
+            sustainability_fee_percentage: 2.0,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '3',
+            category_id: 'disasters',
+            title: '🌪️ Florida — Category 3+ Hurricane Landfall Before Nov 2025',
+            description: 'Will a Category 3 or stronger hurricane make landfall in Florida before November 2025?',
+            target_date: '2025-10-31T23:59:59Z',
+            current_price: 0.28,
+            volume: 156000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+            ],
+            resolution_criteria: 'Official hurricane data from National Hurricane Center',
+            sustainability_fee_percentage: 2.5,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '4',
+            category_id: 'disasters',
+            title: '🔥 California — Wildfire > 10,000 acres by September',
+            description: 'Will a wildfire in California exceed 10,000 acres in size by September 2024?',
+            target_date: '2024-09-01T23:59:59Z',
+            current_price: 0.54,
+            volume: 98000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'Cal Fire', url: 'https://www.fire.ca.gov' }
+            ],
+            resolution_criteria: 'Official wildfire data from California Department of Forestry and Fire Protection',
+            sustainability_fee_percentage: 2.0,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '5',
+            category_id: 'records',
+            title: '🌡️ Phoenix, AZ — All-Time High Temperature Broken in 2025',
+            description: 'Will Phoenix, Arizona break its all-time high temperature record in 2025?',
+            target_date: '2025-12-31T23:59:59Z',
+            current_price: 0.41,
+            volume: 67000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NWS Phoenix', url: 'https://www.weather.gov/psr' }
+            ],
+            resolution_criteria: 'Official temperature data from National Weather Service Phoenix',
+            sustainability_fee_percentage: 2.0,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '6',
+            category_id: 'records',
+            title: '💨 Atlantic — Fastest Sustained Hurricane Winds in a Decade',
+            description: 'Will the Atlantic basin see a hurricane with sustained winds exceeding 180 mph in 2024?',
+            target_date: '2024-11-30T23:59:59Z',
+            current_price: 0.66,
+            volume: 112000,
+            country: 'Atlantic',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+            ],
+            resolution_criteria: 'Official hurricane wind speed data from National Hurricane Center',
+            sustainability_fee_percentage: 2.5,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '7',
+            category_id: 'precipitation',
+            title: '❄️ Minneapolis, MN — Snowfall on Thanksgiving Day',
+            description: 'Will there be measurable snowfall (≥0.1 inches) in Minneapolis, MN on Thanksgiving Day 2024?',
+            target_date: '2024-11-27T23:59:59Z',
+            current_price: 0.35,
+            volume: 89000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NWS Minneapolis', url: 'https://www.weather.gov/mpx' }
+            ],
+            resolution_criteria: 'Official snowfall data from National Weather Service Minneapolis',
+            sustainability_fee_percentage: 2.0,
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z'
+          },
+          {
+            id: '8',
+            category_id: 'precipitation',
+            title: '🌵 Phoenix, AZ — No measurable rain in October',
+            description: 'Will Phoenix, Arizona receive no measurable rainfall (≥0.01 inches) during October 2024?',
+            target_date: '2024-10-31T23:59:59Z',
+            current_price: 0.72,
+            volume: 76000,
+            country: 'USA',
+            verification_sources: [
+              { name: 'NOAA', url: 'https://www.noaa.gov' },
+              { name: 'NWS Phoenix', url: 'https://www.weather.gov/psr' }
+            ],
+            resolution_criteria: 'Official precipitation data from National Weather Service Phoenix',
             sustainability_fee_percentage: 2.0,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -264,6 +374,9 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/how-it-works" element={<HowItWorksPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Routes>
         
         {/* Footer */}
