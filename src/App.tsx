@@ -12,6 +12,7 @@ import { CategoryPage } from './pages/CategoryPage';
 import { WalletPage } from './pages/WalletPage';
 import { FeaturedMarket } from './components/FeaturedMarket';
 import { DeepLinkHandler } from './components/DeepLinkHandler';
+import { AuthNav } from './components/AuthNav';
 import type { PredictionMarket } from './types/climate';
 
 // Initialize Supabase client
@@ -67,6 +68,8 @@ function App() {
   const [markets, setMarkets] = useState<PredictionMarket[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isWalletConnected, setIsWalletConnected] = useState(false);
+  const [userAddress, setUserAddress] = useState<string>('');
 
   useEffect(() => {
     fetchMarkets();
@@ -155,14 +158,32 @@ function App() {
 
   const featuredMarket = markets[0];
 
+  const handleConnectWallet = () => {
+    // This would integrate with Web3Modal
+    console.log('Connecting wallet...');
+    setIsWalletConnected(true);
+    setUserAddress('0x1234...5678'); // Mock address
+  };
+
+  const handleDisconnectWallet = () => {
+    setIsWalletConnected(false);
+    setUserAddress('');
+  };
+
   return (
     <WagmiConfig config={config}>
       <div className="min-h-screen bg-black text-white">
         <DeepLinkHandler />
+        <AuthNav 
+          isConnected={isWalletConnected}
+          userAddress={userAddress}
+          onConnect={handleConnectWallet}
+          onDisconnect={handleDisconnectWallet}
+        />
         {/* Netflix-style Header */}
-        <header className={`fixed w-full z-50 transition-all duration-500 ${
+        <header className={`fixed w-full z-40 transition-all duration-500 ${
           isScrolled ? 'bg-black' : 'bg-gradient-to-b from-black/80 to-transparent'
-        }`}>
+        }`} style={{ top: '48px' }}>
           <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-8">
@@ -199,7 +220,7 @@ function App() {
             <main>
               {featuredMarket && <FeaturedMarket market={featuredMarket} />}
               
-              <div className="relative z-10 mt-[-100px] pt-16 space-y-8">
+              <div className="relative z-10 mt-[-100px] pt-24 space-y-8">
                 <MarketRow 
                   title="Trending Markets" 
                   markets={categorizedMarkets.trending} 
