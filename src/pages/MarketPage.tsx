@@ -17,6 +17,7 @@ import { createClient } from '@supabase/supabase-js';
 import { PricePoints } from '../components/PricePoints';
 import { OrderBook } from '../components/OrderBook';
 import { TradePanel } from '../components/TradePanel';
+import { AdvancedTradingPanel } from '../components/AdvancedTradingPanel';
 import type { PredictionMarket, MarketPricePoint, OrderBook as OrderBookType } from '../types/climate';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -55,6 +56,7 @@ export function MarketPage() {
   const [loading, setLoading] = useState(true);
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [showDetails, setShowDetails] = useState(false);
+  const [showAdvancedTrading, setShowAdvancedTrading] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -261,42 +263,79 @@ export function MarketPage() {
 
           {/* Trading Panel */}
           <div className="space-y-6">
-            <div className="bg-gray-900 rounded-xl p-4">
-              <div className="grid grid-cols-2 gap-2">
+            {/* Trading Toggle */}
+            <div className="flex justify-center">
+              <div className="flex bg-gray-800 rounded-lg p-1">
                 <button
-                  onClick={() => setTradeType('buy')}
-                  className={`py-2 rounded-lg font-medium transition-colors ${
-                    tradeType === 'buy'
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  onClick={() => setShowAdvancedTrading(false)}
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    !showAdvancedTrading 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-gray-300 hover:text-white'
                   }`}
                 >
-                  Buy Yes
+                  Simple Trading
                 </button>
                 <button
-                  onClick={() => setTradeType('sell')}
-                  className={`py-2 rounded-lg font-medium transition-colors ${
-                    tradeType === 'sell'
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  onClick={() => setShowAdvancedTrading(true)}
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    showAdvancedTrading 
+                      ? 'bg-blue-600 text-white' 
+                      : 'text-gray-300 hover:text-white'
                   }`}
                 >
-                  Buy No
+                  Advanced Trading
                 </button>
               </div>
             </div>
 
-            <TradePanel
-              type={tradeType}
-              currentPrice={market.current_price}
-              onTrade={handleTrade}
-            />
+            {showAdvancedTrading ? (
+              <AdvancedTradingPanel
+                marketId={market.id}
+                currentPrice={market.current_price}
+                userAddress="0x1234567890123456789012345678901234567890" // Mock address
+                isWalletConnected={true} // Mock connected state
+              />
+            ) : (
+              <>
+                <div className="bg-gray-900 rounded-xl p-4">
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setTradeType('buy')}
+                      className={`py-2 rounded-lg font-medium transition-colors ${
+                        tradeType === 'buy'
+                          ? 'bg-green-600 text-white'
+                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      }`}
+                    >
+                      Buy Yes
+                    </button>
+                    <button
+                      onClick={() => setTradeType('sell')}
+                      className={`py-2 rounded-lg font-medium transition-colors ${
+                        tradeType === 'sell'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      }`}
+                    >
+                      Buy No
+                    </button>
+                  </div>
+                </div>
 
-            <PricePoints 
-              pricePoints={pricePoints}
-              onSelect={setSelectedPrice}
-              selectedPrice={selectedPrice}
-            />
+                <TradePanel
+                  type={tradeType}
+                  currentPrice={market.current_price}
+                  onTrade={handleTrade}
+                />
+
+                <PricePoints 
+                  pricePoints={pricePoints}
+                  onSelect={setSelectedPrice}
+                  selectedPrice={selectedPrice}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

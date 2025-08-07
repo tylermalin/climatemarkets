@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -21,35 +21,67 @@ import {
   Activity,
   Target
 } from 'lucide-react';
+import { UserService, UserProfile } from '../lib/userService';
 
 export function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock user data
-  const user = {
-    name: "Alex Johnson",
-    email: "alex.johnson@example.com",
-    username: "climate_trader",
-    joinDate: "2023-03-15",
-    location: "San Francisco, CA",
-    bio: "Passionate about climate prediction markets and sustainable investing. Trading since 2023.",
-    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
-    walletAddress: "0x742d35Cc6634C0532925a3b8D4C9db96C4b4d8b6",
-    verificationStatus: "verified",
-    tradingLevel: "Advanced",
-    totalTrades: 156,
-    winRate: 68.5,
-    totalProfit: 2347.50
-  };
+  // Get wallet address from localStorage
+  const walletAddress = localStorage.getItem('userAddress') || '0x1234567890123456789012345678901234567890';
+
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const profile = await UserService.getUserProfile(walletAddress);
+        setUserProfile(profile);
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserProfile();
+  }, [walletAddress]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+            <p className="mt-4 text-gray-400">Loading profile...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!userProfile) {
+    return (
+      <div className="min-h-screen bg-black text-white pt-24">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center">
+            <p className="text-red-400">Failed to load user profile</p>
+            <Link to="/dashboard" className="text-blue-400 hover:text-blue-300 mt-4 inline-block">
+              Back to Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
-    username: user.username,
-    location: user.location,
-    bio: user.bio,
+    name: userProfile.full_name || '',
+    email: userProfile.email || '',
+    username: userProfile.username,
+    location: userProfile.location || '',
+    bio: userProfile.bio || '',
     currentPassword: "",
     newPassword: "",
     confirmPassword: ""
@@ -59,19 +91,34 @@ export function ProfilePage() {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleSave = () => {
-    // Simulate saving
-    console.log('Saving profile data:', formData);
+  const handleSave = async () => {
+    try {
+      const updatedProfile = await UserService.upsertUserProfile({
+        wallet_address: walletAddress,
+        full_name: formData.name,
+        email: formData.email,
+        username: formData.username,
+        location: formData.location,
+        bio: formData.bio
+      });
+      
+      if (updatedProfile) {
+        setUserProfile(updatedProfile);
+        console.log('Profile saved successfully');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    }
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     setFormData({
-      name: user.name,
-      email: user.email,
-      username: user.username,
-      location: user.location,
-      bio: user.bio,
+      name: userProfile.full_name || '',
+      email: userProfile.email || '',
+      username: userProfile.username,
+      location: userProfile.location || '',
+      bio: userProfile.bio || '',
       currentPassword: "",
       newPassword: "",
       confirmPassword: ""
@@ -112,26 +159,26 @@ export function ProfilePage() {
           {/* Profile Card */}
           <div className="lg:col-span-1">
             <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-              <div className="text-center mb-6">
-                <div className="relative inline-block">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-24 h-24 rounded-full object-cover border-4 border-gray-800"
-                  />
-                  {isEditing && (
-                    <button className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full hover:bg-blue-700 transition-colors">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                  )}
+                              <div className="text-center mb-6">
+                  <div className="relative inline-block">
+                    <img
+                      src={userProfile.avatar_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face"}
+                      alt={userProfile.full_name || userProfile.username}
+                      className="w-24 h-24 rounded-full object-cover border-4 border-gray-800"
+                    />
+                    {isEditing && (
+                      <button className="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full hover:bg-blue-700 transition-colors">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                  <h2 className="text-xl font-semibold mt-4">{userProfile.full_name || userProfile.username}</h2>
+                  <p className="text-gray-400">@{userProfile.username}</p>
+                  <div className="flex items-center justify-center mt-2">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
+                    <span className="text-sm text-green-500">Verified</span>
+                  </div>
                 </div>
-                <h2 className="text-xl font-semibold mt-4">{user.name}</h2>
-                <p className="text-gray-400">@{user.username}</p>
-                <div className="flex items-center justify-center mt-2">
-                  <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-                  <span className="text-sm text-green-500">Verified</span>
-                </div>
-              </div>
 
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">

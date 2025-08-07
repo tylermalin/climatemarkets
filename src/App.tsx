@@ -81,6 +81,16 @@ function App() {
   useEffect(() => {
     fetchMarkets();
     
+    // Check for existing wallet connection
+    const isConnected = localStorage.getItem('walletConnected') === 'true';
+    const savedAddress = localStorage.getItem('userAddress');
+    
+    if (isConnected && savedAddress) {
+      setIsWalletConnected(true);
+      setUserAddress(savedAddress);
+      console.log('Restored wallet connection:', savedAddress);
+    }
+    
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
@@ -272,16 +282,35 @@ function App() {
 
   const featuredMarket = markets[0];
 
-  const handleConnectWallet = () => {
-    // This would integrate with Web3Modal
-    console.log('Connecting wallet...');
-    setIsWalletConnected(true);
-    setUserAddress('0x1234...5678'); // Mock address
+  const handleConnectWallet = async () => {
+    try {
+      // Simulate Web3Modal connection
+      console.log('Connecting wallet to testnet...');
+      
+      // Mock testnet connection
+      const mockAddress = '0x1234567890123456789012345678901234567890';
+      setIsWalletConnected(true);
+      setUserAddress(mockAddress);
+      
+      // Store wallet connection in localStorage
+      localStorage.setItem('walletConnected', 'true');
+      localStorage.setItem('userAddress', mockAddress);
+      
+      console.log('Wallet connected:', mockAddress);
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
   };
 
   const handleDisconnectWallet = () => {
     setIsWalletConnected(false);
     setUserAddress('');
+    
+    // Clear localStorage
+    localStorage.removeItem('walletConnected');
+    localStorage.removeItem('userAddress');
+    
+    console.log('Wallet disconnected');
   };
 
   return (
