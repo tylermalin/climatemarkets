@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DollarSign, Plus, Minus } from 'lucide-react';
-import { TradesService } from '../lib/trades';
 
 interface TradePanelProps {
   type: 'buy' | 'sell';
@@ -13,7 +12,7 @@ interface TradePanelProps {
   marketTitle?: string;
 }
 
-export function TradePanel({ type, currentPrice, onTrade, isWalletConnected, userAddress, marketId, marketTitle }: TradePanelProps) {
+export function TradePanel({ type, currentPrice, onTrade, isWalletConnected, userAddress }: TradePanelProps) {
   const [amount, setAmount] = useState(20);
   const maxAmount = 100;
   const [isProcessing, setIsProcessing] = useState(false);
@@ -109,15 +108,6 @@ export function TradePanel({ type, currentPrice, onTrade, isWalletConnected, use
               
               if (confirmed) {
                 // Execute trade using trades service
-                const tradesService = TradesService.getInstance();
-                const trade = tradesService.executeTrade(
-                  userAddress!,
-                  marketId || 'unknown',
-                  marketTitle || 'Unknown Market',
-                  type,
-                  amount,
-                  currentPrice
-                );
                 
                 // Simulate transaction processing
                 await new Promise(resolve => setTimeout(resolve, 2000));

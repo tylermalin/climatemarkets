@@ -205,6 +205,7 @@ export function AuthModal({ isOpen, onClose, onSuccess }: AuthModalProps) {
               <button
                 onClick={onClose}
                 className="p-2 text-gray-400 hover:text-white transition-colors"
+                aria-label="Close"
               >
                 <X className="w-5 h-5" />
               </button>

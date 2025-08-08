@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Settings, 
   Bell, 
   Shield, 
-  CreditCard, 
   Globe, 
   Moon, 
-  Sun,
   Volume2,
   VolumeX,
   Eye,
@@ -208,6 +206,7 @@ export function SettingsPage() {
                         Currency
                       </label>
                       <select
+                        aria-label="Currency"
                         value={settings.currency}
                         onChange={(e) => handleSettingChange('currency', e.target.value)}
                         className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white"
