@@ -21,8 +21,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom'],
-          wagmi: ['wagmi', '@wagmi/core']
+          vendor: ['react', 'react-dom']
         }
       }
     }
