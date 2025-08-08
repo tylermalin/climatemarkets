@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Globe2, Search, Bell } from 'lucide-react';
-import { Providers } from './providers';
+// import { Providers } from './providers'; // Temporarily disabled
 import { MarketRow } from './components/MarketRow';
 import { MarketTile } from './components/MarketTile';
 import { MarketPage } from './pages/MarketPage';
@@ -709,9 +709,10 @@ function AppContent() {
 
 function App() {
   return (
-    <Providers>
+    // Temporarily disable Alchemy providers to avoid API errors
+    // <Providers>
       <AppContent />
-    </Providers>
+    // </Providers>
   );
 }
 
