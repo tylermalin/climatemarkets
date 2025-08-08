@@ -9,9 +9,9 @@ export const config = createConfig(
       apiKey: "alcht_ibGcrP7Kpnqt4DOccBtkHwZxCLQbYH",
     }),
     chain: base,
-    ssr: true,
+    ssr: false, // Disable SSR to avoid API issues
     storage: cookieStorage,
-    enablePopupOauth: true,
+    enablePopupOauth: false, // Disable OAuth to avoid API issues
     // For gas sponsorship (optional)
     // Learn more here: https://www.alchemy.com/docs/wallets/react/sponsor-gas
     // policyId: "YOUR_POLICY_ID",

@@ -13,7 +13,7 @@ interface TradePanelProps {
   marketTitle?: string;
 }
 
-export function TradePanel({ type, currentPrice, onTrade, isWalletConnected, userAddress }: TradePanelProps) {
+export function TradePanel({ type, currentPrice, onTrade, isWalletConnected, userAddress, marketId, marketTitle }: TradePanelProps) {
   const [amount, setAmount] = useState(20);
   const maxAmount = 100;
   const [isProcessing, setIsProcessing] = useState(false);
