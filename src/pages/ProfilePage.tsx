@@ -19,7 +19,9 @@ import {
   Award,
   TrendingUp,
   Activity,
-  Target
+  Target,
+  Wallet,
+  Copy
 } from 'lucide-react';
 import { UserService, UserProfile } from '../lib/userService';
 
@@ -183,20 +185,20 @@ export function ProfilePage() {
               <div className="space-y-4">
                 <div className="flex items-center space-x-3">
                   <Mail className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-300">{user.email}</span>
+                  <span className="text-sm text-gray-300">{userProfile.email || 'No email set'}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Calendar className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-300">Joined {new Date(user.joinDate).toLocaleDateString()}</span>
+                  <span className="text-sm text-gray-300">Joined {new Date(userProfile.created_at || Date.now()).toLocaleDateString()}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-300">{user.location}</span>
+                  <span className="text-sm text-gray-300">{userProfile.location || 'No location set'}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Key className="w-4 h-4 text-gray-400" />
                   <span className="text-sm text-gray-300 font-mono">
-                    {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
+                    {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
                   </span>
                 </div>
               </div>
@@ -206,19 +208,57 @@ export function ProfilePage() {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-400">Total Trades:</span>
-                    <span className="text-white">{user.totalTrades}</span>
+                    <span className="text-white">{userProfile.total_trades || 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Win Rate:</span>
-                    <span className="text-green-500">{user.winRate}%</span>
+                    <span className="text-green-500">{userProfile.win_rate || 0}%</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Total Profit:</span>
-                    <span className="text-green-500">${user.totalProfit.toLocaleString()}</span>
+                    <span className="text-green-500">${(userProfile.total_profit || 0).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Level:</span>
-                    <span className="text-blue-500">{user.tradingLevel}</span>
+                    <span className="text-blue-500">{userProfile.trading_level || 'Beginner'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Wallet Connection Section */}
+              <div className="mt-6 pt-6 border-t border-gray-800">
+                <h3 className="font-semibold mb-3">Wallet Connection</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <Wallet className="w-5 h-5 text-blue-400" />
+                      <div>
+                        <p className="text-sm text-white font-mono">
+                          {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                        </p>
+                        <p className="text-xs text-gray-400">BASE Network</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(walletAddress);
+                      }}
+                      className="p-2 text-gray-400 hover:text-white transition-colors"
+                      title="Copy wallet address"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <button className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                      <Wallet className="w-4 h-4" />
+                      <span>Connect New Wallet</span>
+                    </button>
+                    <button className="flex-1 flex items-center justify-center space-x-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
+                      <Globe className="w-4 h-4" />
+                      <span>View on Explorer</span>
+                    </button>
                   </div>
                 </div>
               </div>
