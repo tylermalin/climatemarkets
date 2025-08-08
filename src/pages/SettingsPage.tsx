@@ -23,7 +23,10 @@ import {
   Mail,
   Lock,
   Palette,
-  DollarSign
+  DollarSign,
+  Wallet,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 
 export function SettingsPage() {
@@ -119,6 +122,7 @@ export function SettingsPage() {
               <nav className="space-y-2">
                 {[
                   { id: 'general', label: 'General', icon: Settings },
+                  { id: 'wallet', label: 'Wallet', icon: Wallet },
                   { id: 'trading', label: 'Trading', icon: DollarSign },
                   { id: 'notifications', label: 'Notifications', icon: Bell },
                   { id: 'security', label: 'Security', icon: Shield },
@@ -213,6 +217,115 @@ export function SettingsPage() {
                         <option value="GBP">GBP (£)</option>
                         <option value="JPY">JPY (¥)</option>
                       </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Wallet Settings */}
+            {activeTab === 'wallet' && (
+              <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                <h2 className="text-xl font-semibold mb-6">Wallet & Profile Settings</h2>
+                
+                <div className="space-y-6">
+                  {/* Current Wallet Info */}
+                  <div className="p-4 bg-gray-800 rounded-lg">
+                    <h3 className="font-medium text-white mb-3">Connected Wallet</h3>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <Wallet className="w-5 h-5 text-blue-400" />
+                        <div>
+                          <p className="text-white font-mono text-sm">
+                            {localStorage.getItem('userAddress') || 'No wallet connected'}
+                          </p>
+                          <p className="text-gray-400 text-xs">BASE Network</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const address = localStorage.getItem('userAddress');
+                          if (address) {
+                            navigator.clipboard.writeText(address);
+                          }
+                        }}
+                        className="p-2 text-gray-400 hover:text-white transition-colors"
+                        title="Copy wallet address"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Profile Information */}
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-white">Profile Information</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Display Name
+                        </label>
+                        <input
+                          type="text"
+                          defaultValue={localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData') || '{}').username || '' : ''}
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white"
+                          placeholder="Enter your display name"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-2">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          defaultValue={localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData') || '{}').email || '' : ''}
+                          className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white"
+                          placeholder="Enter your email"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-400 mb-2">
+                        Bio
+                      </label>
+                      <textarea
+                        rows={3}
+                        className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white"
+                        placeholder="Tell us about yourself..."
+                      />
+                    </div>
+                  </div>
+
+                  {/* Wallet Actions */}
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-white">Wallet Actions</h3>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <button className="flex items-center justify-center space-x-2 p-4 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                        <ExternalLink className="w-4 h-4" />
+                        <span>View on Explorer</span>
+                      </button>
+                      
+                      <button className="flex items-center justify-center space-x-2 p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
+                        <Wallet className="w-4 h-4" />
+                        <span>Connect New Wallet</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Security Note */}
+                  <div className="p-4 bg-yellow-900/20 border border-yellow-800 rounded-lg">
+                    <div className="flex items-start space-x-3">
+                      <AlertTriangle className="w-5 h-5 text-yellow-500 mt-0.5" />
+                      <div>
+                        <h3 className="font-medium text-yellow-400">Security Reminder</h3>
+                        <p className="text-sm text-yellow-200 mt-1">
+                          Never share your private keys or seed phrase. Keep them secure and offline.
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
