@@ -13,8 +13,8 @@ export default defineConfig({
   },
   server: {
     headers: {
-      // Override any CSP headers to allow Web3Modal eval
-      'Content-Security-Policy': 'default-src * \'unsafe-inline\' \'unsafe-eval\' data: blob:;'
+      // Standard CSP headers
+      'Content-Security-Policy': 'default-src * \'unsafe-inline\' data: blob:;'
     }
   },
   build: {
@@ -22,8 +22,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'],
-          wagmi: ['wagmi', '@wagmi/core'],
-          web3: ['@web3modal/wagmi', '@web3modal/react']
+          wagmi: ['wagmi', '@wagmi/core']
         }
       }
     }
