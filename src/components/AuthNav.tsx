@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Wallet, User, LogIn, UserPlus, LogOut, Settings, Bell } from 'lucide-react';
-import { LoginModal } from './LoginModal';
 
 interface AuthNavProps {
   isConnected: boolean;
@@ -56,7 +55,10 @@ export function AuthNav({ isConnected, userAddress, onConnect, onDisconnect }: A
             {/* Right side - Auth & Notifications */}
             <div className="flex items-center space-x-4">
               {/* Notifications */}
-              <button className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors">
+              <button 
+                className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors"
+                title="Notifications"
+              >
                 <Bell className="h-4 w-4 text-gray-400" />
               </button>
 
@@ -132,14 +134,7 @@ export function AuthNav({ isConnected, userAddress, onConnect, onDisconnect }: A
         </div>
       </div>
 
-      {/* Auth Modal */}
-      <LoginModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        onLogin={handleLogin}
-        onSignup={handleSignup}
-        onWalletConnect={handleWalletConnect}
-      />
+
     </>
   );
 }
