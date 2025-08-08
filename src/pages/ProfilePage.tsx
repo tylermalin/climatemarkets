@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -9,7 +9,6 @@ import {
   Globe, 
   Shield, 
   Key, 
-  Bell, 
   Eye,
   EyeOff,
   Edit,
@@ -38,7 +37,8 @@ export function ProfilePage() {
   useEffect(() => {
     const loadUserProfile = async () => {
       try {
-        const profile = await UserService.getUserProfile(walletAddress);
+        const userService = new UserService();
+        const profile = await userService.getUserProfile(walletAddress);
         setUserProfile(profile);
       } catch (error) {
         console.error('Error loading user profile:', error);
