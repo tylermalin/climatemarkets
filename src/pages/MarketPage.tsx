@@ -18,6 +18,7 @@ import { PricePoints } from '../components/PricePoints';
 import { OrderBook } from '../components/OrderBook';
 import { TradePanel } from '../components/TradePanel';
 import { AdvancedTradingPanel } from '../components/AdvancedTradingPanel';
+import { SmartContractTradePanel } from '../components/SmartContractTradePanel';
 import type { PredictionMarket, MarketPricePoint, OrderBook as OrderBookType } from '../types/climate';
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
@@ -57,6 +58,7 @@ export function MarketPage() {
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [showDetails, setShowDetails] = useState(false);
   const [showAdvancedTrading, setShowAdvancedTrading] = useState(false);
+  const [showSmartContract, setShowSmartContract] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -267,9 +269,12 @@ export function MarketPage() {
             <div className="flex justify-center">
               <div className="flex bg-gray-800 rounded-lg p-1">
                 <button
-                  onClick={() => setShowAdvancedTrading(false)}
+                  onClick={() => {
+                    setShowAdvancedTrading(false);
+                    setShowSmartContract(false);
+                  }}
                   className={`px-4 py-2 rounded-md transition-colors ${
-                    !showAdvancedTrading 
+                    !showAdvancedTrading && !showSmartContract
                       ? 'bg-blue-600 text-white' 
                       : 'text-gray-300 hover:text-white'
                   }`}
@@ -277,7 +282,10 @@ export function MarketPage() {
                   Simple Trading
                 </button>
                 <button
-                  onClick={() => setShowAdvancedTrading(true)}
+                  onClick={() => {
+                    setShowAdvancedTrading(true);
+                    setShowSmartContract(false);
+                  }}
                   className={`px-4 py-2 rounded-md transition-colors ${
                     showAdvancedTrading 
                       ? 'bg-blue-600 text-white' 
@@ -286,10 +294,25 @@ export function MarketPage() {
                 >
                   Advanced Trading
                 </button>
+                <button
+                  onClick={() => {
+                    setShowAdvancedTrading(false);
+                    setShowSmartContract(true);
+                  }}
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    showSmartContract 
+                      ? 'bg-green-600 text-white' 
+                      : 'text-gray-300 hover:text-white'
+                  }`}
+                >
+                  Smart Contract
+                </button>
               </div>
             </div>
 
-            {showAdvancedTrading ? (
+            {showSmartContract ? (
+              <SmartContractTradePanel market={market} />
+            ) : showAdvancedTrading ? (
               <AdvancedTradingPanel
                 marketId={market.id}
                 currentPrice={market.current_price}

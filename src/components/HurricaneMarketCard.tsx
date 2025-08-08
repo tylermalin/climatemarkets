@@ -86,11 +86,17 @@ export function HurricaneMarketCard({ market }: HurricaneMarketCardProps) {
 
       {/* Action Buttons */}
       <div className="flex space-x-2 mb-4">
-        <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-          Buy Yes
-        </button>
-        <button className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-          Buy No
+        <Link
+          to={`/market/${market.id}`}
+          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-center"
+        >
+          Trade Now
+        </Link>
+        <button 
+          onClick={() => setShowInfoModal(true)}
+          className="flex-1 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+        >
+          More Info
         </button>
       </div>
 
