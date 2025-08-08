@@ -24,12 +24,13 @@ export const config = createConfig(
           { type: "passkey" },
           { type: "social", authProviderId: "google", mode: "popup" },
         ],
-        [
-          {
-            type: "external_wallets",
-            walletConnect: { projectId: "your-project-id" },
-          },
-        ],
+        // External wallets disabled until proper project ID is configured
+        // [
+        //   {
+        //     type: "external_wallets",
+        //     walletConnect: { projectId: "YOUR_WALLETCONNECT_PROJECT_ID" },
+        //   },
+        // ],
       ],
       addPasskeyOnSignup: true,
     },

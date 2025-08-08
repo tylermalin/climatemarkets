@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import { Globe2, Search, Bell } from 'lucide-react';
-import { Providers } from './providers';
-import {
-  useAuthModal,
-  useLogout,
-  useSignerStatus,
-  useUser,
-} from "@account-kit/react";
 import { MarketRow } from './components/MarketRow';
 import { MarketTile } from './components/MarketTile';
 import { MarketPage } from './pages/MarketPage';
@@ -30,16 +23,10 @@ import type { PredictionMarket } from './types/climate';
 // Simple wallet connection state
 let isWeb3Configured = true;
 
-function App() {
+function AppContent() {
   const [markets, setMarkets] = useState<PredictionMarket[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isScrolled, setIsScrolled] = useState(false);
-  
-  // Alchemy Smart Wallets hooks
-  const user = useUser();
-  const { openAuthModal } = useAuthModal();
-  const signerStatus = useSignerStatus();
-  const { logout } = useLogout();
   
   // Legacy state for backward compatibility
   const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -419,7 +406,7 @@ function App() {
   }
 
   const handleConnectWallet = async () => {
-    openAuthModal();
+    setShowAuthModal(true);
   };
 
   const handleAuthSuccess = (userData: any) => {
@@ -433,7 +420,6 @@ function App() {
   };
 
   const handleDisconnectWallet = () => {
-    logout();
     setIsWalletConnected(false);
     setUserAddress('');
     setUserData(null);
@@ -515,9 +501,15 @@ function App() {
   };
 
   return (
-    <Providers>
-      <div className="min-h-screen bg-black text-white">
-        <DeepLinkHandler />
+    <div className="min-h-screen bg-black text-white">
+      <DeepLinkHandler />
+      
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={handleAuthSuccess}
+      />
       
       {/* Header */}
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -574,25 +566,25 @@ function App() {
               </button>
               
               {/* Wallet Connection */}
-              {signerStatus.isInitializing ? (
-                <div className="px-4 py-2 text-gray-400">Loading...</div>
-              ) : !user ? (
+              {!userData && (
                 <button
                   onClick={handleConnectWallet}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Create Account
                 </button>
-              ) : (
+              )}
+              
+              {userData && (
                 <div className="flex items-center space-x-3">
                   <div className="text-right">
                     <div className="text-sm text-white font-medium">
-                      {user.email || 'User'}
+                      {userData.username || userData.email?.split('@')[0] || 'User'}
                     </div>
                     <div className="text-xs text-gray-400">
-                      {user.address ? 
-                        `${user.address.slice(0, 6)}...${user.address.slice(-4)}` :
-                        'Connected'
+                      {userData.walletAddress ? 
+                        `${userData.walletAddress.slice(0, 6)}...${userData.walletAddress.slice(-4)}` :
+                        userData.email
                       }
                     </div>
                   </div>
@@ -704,7 +696,14 @@ function App() {
 
       {/* Footer */}
       <Footer />
-      </div>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <Providers>
+      <AppContent />
     </Providers>
   );
 }
