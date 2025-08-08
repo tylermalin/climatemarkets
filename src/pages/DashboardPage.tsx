@@ -257,8 +257,6 @@ export function DashboardPage() {
                               <Clock className="h-5 w-5 text-yellow-500" />
                             )}
                           </td>
-                            )}
-                          </td>
                         </tr>
                       ))}
                     </tbody>
