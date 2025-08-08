@@ -34,8 +34,18 @@ export function DashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const userData = localStorage.getItem('userData');
     const userAddress = localStorage.getItem('userAddress');
-    if (!userAddress) {
+    
+    if (!userData && !userAddress) {
+      navigate('/');
+      return;
+    }
+
+    // Use userAddress from localStorage or from userData
+    const address = userAddress || (userData ? JSON.parse(userData).walletAddress : null);
+    
+    if (!address) {
       navigate('/');
       return;
     }
@@ -43,15 +53,15 @@ export function DashboardPage() {
     const tradesService = TradesService.getInstance();
     
     // Seed mock data if no trades exist
-    const existingTrades = tradesService.loadTrades(userAddress);
+    const existingTrades = tradesService.loadTrades(address);
     if (existingTrades.length === 0) {
-      tradesService.seedMockData(userAddress);
+      tradesService.seedMockData(address);
     }
 
     // Load user data
-    const stats = tradesService.getUserStats(userAddress);
-    const trades = tradesService.getRecentTrades(userAddress, 10);
-    const positions = tradesService.getActivePositions(userAddress);
+    const stats = tradesService.getUserStats(address);
+    const trades = tradesService.getRecentTrades(address, 10);
+    const positions = tradesService.getActivePositions(address);
 
     setUserStats(stats);
     setRecentTrades(trades);
@@ -83,7 +93,12 @@ export function DashboardPage() {
               Welcome back! Here's your trading overview.
               <br />
               <span className="text-sm text-blue-400">
-                Wallet: {localStorage.getItem('userAddress')?.slice(0, 6)}...{localStorage.getItem('userAddress')?.slice(-4)}
+                Wallet: {(() => {
+                  const userData = localStorage.getItem('userData');
+                  const userAddress = localStorage.getItem('userAddress');
+                  const address = userAddress || (userData ? JSON.parse(userData).walletAddress : null);
+                  return address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Not connected';
+                })()}
               </span>
             </p>
           </div>
