@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -15,71 +15,55 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   Plus,
-  Eye
+  Eye,
+  LogOut
 } from 'lucide-react';
+import { TradesService, type Trade, type Position } from '../lib/trades';
 
 export function DashboardPage() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [userStats, setUserStats] = useState({
+    totalTrades: 0,
+    totalValue: 0,
+    totalProfit: 0,
+    activePositions: 0,
+    winRate: 0
+  });
+  const [recentTrades, setRecentTrades] = useState<Trade[]>([]);
+  const [activePositions, setActivePositions] = useState<Position[]>([]);
+  const navigate = useNavigate();
 
-  // Mock data
-  const userStats = {
-    totalValue: 1250.50,
-    totalProfit: 234.75,
-    profitPercentage: 23.1,
-    activePositions: 8,
-    completedTrades: 24
+  useEffect(() => {
+    const userAddress = localStorage.getItem('userAddress');
+    if (!userAddress) {
+      navigate('/');
+      return;
+    }
+
+    const tradesService = TradesService.getInstance();
+    
+    // Seed mock data if no trades exist
+    const existingTrades = tradesService.loadTrades(userAddress);
+    if (existingTrades.length === 0) {
+      tradesService.seedMockData(userAddress);
+    }
+
+    // Load user data
+    const stats = tradesService.getUserStats(userAddress);
+    const trades = tradesService.getRecentTrades(userAddress, 10);
+    const positions = tradesService.getActivePositions(userAddress);
+
+    setUserStats(stats);
+    setRecentTrades(trades);
+    setActivePositions(positions);
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('walletConnected');
+    localStorage.removeItem('userAddress');
+    localStorage.removeItem('userData');
+    navigate('/');
   };
-
-  const recentTrades = [
-    {
-      id: 1,
-      market: "Global Temperature 2024",
-      type: "buy",
-      amount: 50.00,
-      outcome: "win",
-      profit: 12.50,
-      date: "2024-01-15"
-    },
-    {
-      id: 2,
-      market: "Carbon Emissions Reduction",
-      type: "sell",
-      amount: 75.00,
-      outcome: "loss",
-      profit: -8.25,
-      date: "2024-01-14"
-    },
-    {
-      id: 3,
-      market: "Arctic Sea Ice Extent",
-      type: "buy",
-      amount: 30.00,
-      outcome: "win",
-      profit: 15.75,
-      date: "2024-01-13"
-    }
-  ];
-
-  const activePositions = [
-    {
-      id: 1,
-      market: "Hurricane Season 2024",
-      position: "Yes",
-      amount: 100.00,
-      currentValue: 125.50,
-      profit: 25.50,
-      endDate: "2024-11-30"
-    },
-    {
-      id: 2,
-      market: "Renewable Energy Adoption",
-      position: "No",
-      amount: 75.00,
-      currentValue: 62.25,
-      profit: -12.75,
-      endDate: "2024-12-31"
-    }
-  ];
 
   const quickActions = [
     { icon: Plus, label: "New Trade", href: "/category/trending", color: "green" },
@@ -92,9 +76,24 @@ export function DashboardPage() {
     <div className="min-h-screen bg-black text-white pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-gray-400">Welcome back! Here's your trading overview.</p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+            <p className="text-gray-400">
+              Welcome back! Here's your trading overview.
+              <br />
+              <span className="text-sm text-blue-400">
+                Wallet: {localStorage.getItem('userAddress')?.slice(0, 6)}...{localStorage.getItem('userAddress')?.slice(-4)}
+              </span>
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </button>
         </div>
 
         {/* Stats Cards */}
@@ -217,8 +216,10 @@ export function DashboardPage() {
                       {recentTrades.map((trade) => (
                         <tr key={trade.id} className="hover:bg-gray-800">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-white">{trade.market}</div>
-                            <div className="text-sm text-gray-400">{trade.date}</div>
+                            <div className="text-sm font-medium text-white">{trade.marketTitle}</div>
+                            <div className="text-sm text-gray-400">
+                              {new Date(trade.timestamp).toLocaleDateString()}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
@@ -230,25 +231,32 @@ export function DashboardPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                            ${trade.amount}
+                            ${trade.amount.toFixed(2)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
-                              {trade.profit >= 0 ? (
+                              {trade.profit && trade.profit >= 0 ? (
                                 <ArrowUpRight className="h-4 w-4 text-green-500 mr-1" />
-                              ) : (
+                              ) : trade.profit && trade.profit < 0 ? (
                                 <ArrowDownRight className="h-4 w-4 text-red-500 mr-1" />
-                              )}
-                              <span className={`text-sm ${trade.profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                ${Math.abs(trade.profit)}
+                              ) : null}
+                              <span className={`text-sm ${
+                                trade.profit && trade.profit >= 0 ? 'text-green-500' : 
+                                trade.profit && trade.profit < 0 ? 'text-red-500' : 'text-gray-400'
+                              }`}>
+                                {trade.profit ? `$${Math.abs(trade.profit).toFixed(2)}` : 'Pending'}
                               </span>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {trade.outcome === 'win' ? (
                               <CheckCircle className="h-5 w-5 text-green-500" />
-                            ) : (
+                            ) : trade.outcome === 'loss' ? (
                               <XCircle className="h-5 w-5 text-red-500" />
+                            ) : (
+                              <Clock className="h-5 w-5 text-yellow-500" />
+                            )}
+                          </td>
                             )}
                           </td>
                         </tr>

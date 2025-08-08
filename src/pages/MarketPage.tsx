@@ -6,32 +6,18 @@ import {
   Globe, 
   Calendar, 
   TrendingUp, 
-  Users, 
   FileText, 
   ExternalLink,
   AlertTriangle,
   ChevronDown
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { createClient } from '@supabase/supabase-js';
 import { PricePoints } from '../components/PricePoints';
 import { OrderBook } from '../components/OrderBook';
 import { TradePanel } from '../components/TradePanel';
 import { AdvancedTradingPanel } from '../components/AdvancedTradingPanel';
 import { SmartContractTradePanel } from '../components/SmartContractTradePanel';
 import type { PredictionMarket, MarketPricePoint, OrderBook as OrderBookType } from '../types/climate';
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// Only create Supabase client if we have valid credentials
-const supabase = supabaseUrl && supabaseKey && !supabaseUrl.includes('your_supabase') && !supabaseKey.includes('your_supabase')
-  ? createClient(supabaseUrl, supabaseKey)
-  : null;
-
-if (!supabase) {
-  console.warn('Supabase not configured. Please add your Supabase credentials to the .env file.');
-}
 
 // Mock order book data
 const mockOrderBook: OrderBookType = {
@@ -64,18 +50,21 @@ export function MarketPage() {
     if (!id) return;
     
     async function fetchMarketData() {
-      if (!supabase) {
-        console.warn('Supabase not configured. Using mock data.');
-        // Set mock market data for development
-        const mockMarket: PredictionMarket = {
-          id: id || '1',
+      console.log('Using mock data for development');
+      console.log('Looking for market with ID:', id);
+      
+      // Use the same mock data as App.tsx
+      const allMarkets = [
+        {
+          id: '1',
           category_id: 'temperature',
-          title: 'Global Temperature 2024',
+          title: 'Global Temperature 2025',
           description: 'Will the global average temperature exceed 1.5°C above pre-industrial levels?',
-          target_date: '2024-12-31T23:59:59Z',
+          target_date: '2025-12-31T23:59:59Z',
           current_price: 0.75,
           volume: 125000,
           country: 'Global',
+          region: 'Global',
           verification_sources: [
             { name: 'NOAA', url: 'https://www.noaa.gov' }
           ],
@@ -83,79 +72,647 @@ export function MarketPage() {
           sustainability_fee_percentage: 2.5,
           created_at: '2024-01-01T00:00:00Z',
           updated_at: '2024-01-01T00:00:00Z'
-        };
-        
-        const mockPricePoints: MarketPricePoint[] = [
-          { 
-            id: '1', 
-            market_id: id || '1', 
-            price_point: 0.75, 
-            probability: 75,
-            volume: 1000,
-            created_at: '2024-01-01T00:00:00Z' 
-          },
-          { 
-            id: '2', 
-            market_id: id || '1', 
-            price_point: 0.74, 
-            probability: 74,
-            volume: 800,
-            created_at: '2024-01-01T00:00:00Z' 
-          },
-          { 
-            id: '3', 
-            market_id: id || '1', 
-            price_point: 0.76, 
-            probability: 76,
-            volume: 1200,
-            created_at: '2024-01-01T00:00:00Z' 
-          }
-        ];
-        
-        setMarket(mockMarket);
-        setPricePoints(mockPricePoints);
-        setLoading(false);
-        return;
-      }
+        },
+        {
+          id: '2',
+          category_id: 'emissions',
+          title: 'Carbon Emissions Target 2025',
+          description: 'Will global carbon emissions decrease by 5% in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.45,
+          volume: 89000,
+          country: 'Global',
+          region: 'Global',
+          verification_sources: [
+            { name: 'IEA', url: 'https://www.iea.org' }
+          ],
+          resolution_criteria: 'Based on official carbon emission reports from major economies',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '3',
+          category_id: 'disasters',
+          title: '🌪️ Florida — Category 3+ Hurricane Landfall Before Nov 2025',
+          description: 'Will a Category 3 or stronger hurricane make landfall in Florida before November 2025?',
+          target_date: '2025-10-31T23:59:59Z',
+          current_price: 0.28,
+          volume: 156000,
+          country: 'USA',
+          region: 'Southeast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '4',
+          category_id: 'disasters',
+          title: '🔥 California — Wildfire > 10,000 acres by September',
+          description: 'Will a wildfire in California exceed 10,000 acres in size by September 2024?',
+          target_date: '2024-09-01T23:59:59Z',
+          current_price: 0.54,
+          volume: 98000,
+          country: 'USA',
+          region: 'West Coast',
+          verification_sources: [
+            { name: 'Cal Fire', url: 'https://www.fire.ca.gov' }
+          ],
+          resolution_criteria: 'Official wildfire data from California Department of Forestry and Fire Protection',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '5',
+          category_id: 'records',
+          title: '️ Phoenix, AZ — All-Time High Temperature Broken in 2025',
+          description: 'Will Phoenix, Arizona break its all-time high temperature record in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.41,
+          volume: 67000,
+          country: 'USA',
+          region: 'Southwest',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Phoenix', url: 'https://www.weather.gov/psr' }
+          ],
+          resolution_criteria: 'Official temperature data from National Weather Service Phoenix',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '6',
+          category_id: 'records',
+          title: '🌪️ Atlantic — Fastest Sustained Hurricane Winds in a Decade',
+          description: 'Will the Atlantic basin see a hurricane with sustained winds exceeding 180 mph in 2024?',
+          target_date: '2024-11-30T23:59:59Z',
+          current_price: 0.66,
+          volume: 112000,
+          country: 'Atlantic',
+          region: 'Atlantic',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane wind speed data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '7',
+          category_id: 'precipitation',
+          title: '❄️ Minneapolis, MN — Snowfall on Thanksgiving Day',
+          description: 'Will there be measurable snowfall (≥0.1 inches) in Minneapolis, MN on Thanksgiving Day 2024?',
+          target_date: '2024-11-27T23:59:59Z',
+          current_price: 0.35,
+          volume: 89000,
+          country: 'USA',
+          region: 'Midwest',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Minneapolis', url: 'https://www.weather.gov/mpx' }
+          ],
+          resolution_criteria: 'Official snowfall data from National Weather Service Minneapolis',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '8',
+          category_id: 'precipitation',
+          title: '🌵 Phoenix, AZ — No measurable rain in October',
+          description: 'Will Phoenix, Arizona receive no measurable rainfall (≥0.01 inches) during October 2024?',
+          target_date: '2024-10-31T23:59:59Z',
+          current_price: 0.72,
+          volume: 76000,
+          country: 'USA',
+          region: 'Southwest',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Phoenix', url: 'https://www.weather.gov/psr' }
+          ],
+          resolution_criteria: 'Official precipitation data from National Weather Service Phoenix',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '9',
+          category_id: 'temperature',
+          title: '🌡️ Arctic Sea Ice Minimum 2025',
+          description: 'Will Arctic sea ice extent fall below 4 million square kilometers in 2025?',
+          target_date: '2025-09-30T23:59:59Z',
+          current_price: 0.38,
+          volume: 92000,
+          country: 'Arctic',
+          region: 'Arctic',
+          verification_sources: [
+            { name: 'NSIDC', url: 'https://nsidc.org' }
+          ],
+          resolution_criteria: 'Official sea ice data from National Snow and Ice Data Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '10',
+          category_id: 'precipitation',
+          title: '🌧️ Seattle, WA — Wettest December on Record',
+          description: 'Will Seattle, Washington experience its wettest December on record in 2024?',
+          target_date: '2024-12-31T23:59:59Z',
+          current_price: 0.29,
+          volume: 54000,
+          country: 'USA',
+          region: 'West Coast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Seattle', url: 'https://www.weather.gov/sew' }
+          ],
+          resolution_criteria: 'Official precipitation data from National Weather Service Seattle',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '11',
+          category_id: 'emissions',
+          title: '🏭 China Coal Consumption 2025',
+          description: 'Will China reduce its coal consumption by 3% in 2025 compared to 2024?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.62,
+          volume: 78000,
+          country: 'China',
+          region: 'Asia',
+          verification_sources: [
+            { name: 'IEA', url: 'https://www.iea.org' },
+            { name: 'NBS China', url: 'http://www.stats.gov.cn' }
+          ],
+          resolution_criteria: 'Official energy consumption data from Chinese National Bureau of Statistics',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '12',
+          category_id: 'disasters',
+          title: ' Pacific — Major Tsunami Warning in 2025',
+          description: 'Will a tsunami with wave heights exceeding 3 meters strike any Pacific coast in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.18,
+          volume: 45000,
+          country: 'Pacific',
+          region: 'Pacific',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'USGS', url: 'https://www.usgs.gov' }
+          ],
+          resolution_criteria: 'Official tsunami data from NOAA Tsunami Warning Centers',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '13',
+          category_id: 'disasters',
+          title: ' Iceland — Volcanic Eruption in 2025',
+          description: 'Will a volcanic eruption occur in Iceland with VEI 3 or higher in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.33,
+          volume: 67000,
+          country: 'Iceland',
+          region: 'Europe',
+          verification_sources: [
+            { name: 'IMO', url: 'https://en.vedur.is' }
+          ],
+          resolution_criteria: 'Official volcanic activity data from Icelandic Met Office',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '14',
+          category_id: 'records',
+          title: '🌡️ Death Valley — Hottest Temperature on Earth in 2025',
+          description: 'Will Death Valley, California record a temperature of 130°F or higher in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.25,
+          volume: 89000,
+          country: 'USA',
+          region: 'West Coast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Las Vegas', url: 'https://www.weather.gov/vef' }
+          ],
+          resolution_criteria: 'Official temperature data from National Weather Service Las Vegas',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '15',
+          category_id: 'records',
+          title: '❄️ Antarctica — Coldest Temperature on Earth in 2025',
+          description: 'Will Antarctica record a temperature of -90°C or lower in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.41,
+          volume: 56000,
+          country: 'Antarctica',
+          region: 'Antarctica',
+          verification_sources: [
+            { name: 'NSIDC', url: 'https://nsidc.org' }
+          ],
+          resolution_criteria: 'Official temperature data from Antarctic research stations',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '16',
+          category_id: 'disasters',
+          title: '🌪️ Cat 3+ Hurricane Hits Miami in 2025',
+          description: 'Will a Category 3 or stronger hurricane make landfall in Miami, Florida in 2025?',
+          target_date: '2025-11-30T23:59:59Z',
+          current_price: 0.19,
+          volume: 15000,
+          country: 'USA',
+          region: 'Southeast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane landfall data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '17',
+          category_id: 'disasters',
+          title: '🌪️ Atlantic Hurricane Season Named Storms 2025',
+          description: 'How many named storms will occur during the 2025 Atlantic Hurricane Season?',
+          target_date: '2025-11-30T23:59:59Z',
+          current_price: 0.39,
+          volume: 205000,
+          country: 'Atlantic',
+          region: 'Atlantic',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official named storm count from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '18',
+          category_id: 'disasters',
+          title: '🌪️ Cat 5 Hurricane US Landfall 2025',
+          description: 'Will a Category 5 hurricane make landfall in the United States during the 2025 Hurricane Season?',
+          target_date: '2025-11-30T23:59:59Z',
+          current_price: 0.11,
+          volume: 22000,
+          country: 'USA',
+          region: 'Southeast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane landfall data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '4',
+          category_id: 'disasters',
+          title: '🔥 California — Wildfire > 10,000 acres by September',
+          description: 'Will a wildfire in California exceed 10,000 acres in size by September 2024?',
+          target_date: '2024-09-01T23:59:59Z',
+          current_price: 0.54,
+          volume: 98000,
+          country: 'USA',
+          region: 'West Coast',
+          verification_sources: [
+            { name: 'Cal Fire', url: 'https://www.fire.ca.gov' }
+          ],
+          resolution_criteria: 'Official wildfire data from California Department of Forestry and Fire Protection',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '5',
+          category_id: 'records',
+          title: '️ Phoenix, AZ — All-Time High Temperature Broken in 2025',
+          description: 'Will Phoenix, Arizona break its all-time high temperature record in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.41,
+          volume: 67000,
+          country: 'USA',
+          region: 'Southwest',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Phoenix', url: 'https://www.weather.gov/psr' }
+          ],
+          resolution_criteria: 'Official temperature data from National Weather Service Phoenix',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '6',
+          category_id: 'records',
+          title: '🌪️ Atlantic — Fastest Sustained Hurricane Winds in a Decade',
+          description: 'Will the Atlantic basin see a hurricane with sustained winds exceeding 180 mph in 2024?',
+          target_date: '2024-11-30T23:59:59Z',
+          current_price: 0.66,
+          volume: 112000,
+          country: 'Atlantic',
+          region: 'Atlantic',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane wind speed data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '7',
+          category_id: 'precipitation',
+          title: '❄️ Minneapolis, MN — Snowfall on Thanksgiving Day',
+          description: 'Will there be measurable snowfall (≥0.1 inches) in Minneapolis, MN on Thanksgiving Day 2024?',
+          target_date: '2024-11-27T23:59:59Z',
+          current_price: 0.35,
+          volume: 89000,
+          country: 'USA',
+          region: 'Midwest',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Minneapolis', url: 'https://www.weather.gov/mpx' }
+          ],
+          resolution_criteria: 'Official snowfall data from National Weather Service Minneapolis',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '8',
+          category_id: 'precipitation',
+          title: '🌵 Phoenix, AZ — No measurable rain in October',
+          description: 'Will Phoenix, Arizona receive no measurable rainfall (≥0.01 inches) during October 2024?',
+          target_date: '2024-10-31T23:59:59Z',
+          current_price: 0.72,
+          volume: 76000,
+          country: 'USA',
+          region: 'Southwest',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Phoenix', url: 'https://www.weather.gov/psr' }
+          ],
+          resolution_criteria: 'Official precipitation data from National Weather Service Phoenix',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '9',
+          category_id: 'temperature',
+          title: '🌡️ Arctic Sea Ice Minimum 2025',
+          description: 'Will Arctic sea ice extent fall below 4 million square kilometers in 2025?',
+          target_date: '2025-09-30T23:59:59Z',
+          current_price: 0.38,
+          volume: 92000,
+          country: 'Arctic',
+          region: 'Arctic',
+          verification_sources: [
+            { name: 'NSIDC', url: 'https://nsidc.org' }
+          ],
+          resolution_criteria: 'Official sea ice data from National Snow and Ice Data Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '10',
+          category_id: 'precipitation',
+          title: '🌧️ Seattle, WA — Wettest December on Record',
+          description: 'Will Seattle, Washington experience its wettest December on record in 2024?',
+          target_date: '2024-12-31T23:59:59Z',
+          current_price: 0.29,
+          volume: 54000,
+          country: 'USA',
+          region: 'West Coast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Seattle', url: 'https://www.weather.gov/sew' }
+          ],
+          resolution_criteria: 'Official precipitation data from National Weather Service Seattle',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '11',
+          category_id: 'emissions',
+          title: '🏭 China Coal Consumption 2025',
+          description: 'Will China reduce its coal consumption by 3% in 2025 compared to 2024?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.62,
+          volume: 78000,
+          country: 'China',
+          region: 'Asia',
+          verification_sources: [
+            { name: 'IEA', url: 'https://www.iea.org' },
+            { name: 'NBS China', url: 'http://www.stats.gov.cn' }
+          ],
+          resolution_criteria: 'Official energy consumption data from Chinese National Bureau of Statistics',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '12',
+          category_id: 'disasters',
+          title: ' Pacific — Major Tsunami Warning in 2025',
+          description: 'Will a tsunami with wave heights exceeding 3 meters strike any Pacific coast in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.18,
+          volume: 45000,
+          country: 'Pacific',
+          region: 'Pacific',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'USGS', url: 'https://www.usgs.gov' }
+          ],
+          resolution_criteria: 'Official tsunami data from NOAA Tsunami Warning Centers',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '13',
+          category_id: 'disasters',
+          title: ' Iceland — Volcanic Eruption in 2025',
+          description: 'Will a volcanic eruption occur in Iceland with VEI 3 or higher in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.33,
+          volume: 67000,
+          country: 'Iceland',
+          region: 'Europe',
+          verification_sources: [
+            { name: 'IMO', url: 'https://en.vedur.is' }
+          ],
+          resolution_criteria: 'Official volcanic activity data from Icelandic Met Office',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '16',
+          category_id: 'disasters',
+          title: '🌪️ Cat 3+ Hurricane Hits Miami in 2025',
+          description: 'Will a Category 3 or stronger hurricane make landfall in Miami, Florida in 2025?',
+          target_date: '2025-11-30T23:59:59Z',
+          current_price: 0.19,
+          volume: 15000,
+          country: 'USA',
+          region: 'Southeast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane landfall data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '17',
+          category_id: 'disasters',
+          title: '🌪️ Atlantic Hurricane Season Named Storms 2025',
+          description: 'How many named storms will occur during the 2025 Atlantic Hurricane Season?',
+          target_date: '2025-11-30T23:59:59Z',
+          current_price: 0.39,
+          volume: 205000,
+          country: 'Atlantic',
+          region: 'Atlantic',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official named storm count from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+          outcomes: [
+            { id: '17a', label: '<12', probability: 0.06, volume: 12300 },
+            { id: '17b', label: '12-15', probability: 0.22, volume: 45100 },
+            { id: '17c', label: '16-19', probability: 0.39, volume: 79950 },
+            { id: '17d', label: '20-23', probability: 0.17, volume: 34850 },
+            { id: '17e', label: '>23', probability: 0.12, volume: 32800 }
+          ]
+        },
+        {
+          id: '18',
+          category_id: 'disasters',
+          title: '🌪️ Cat 5 Hurricane US Landfall 2025',
+          description: 'Will a Category 5 hurricane make landfall in the United States during the 2025 Hurricane Season?',
+          target_date: '2025-11-30T23:59:59Z',
+          current_price: 0.11,
+          volume: 22000,
+          country: 'USA',
+          region: 'Southeast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NHC', url: 'https://www.nhc.noaa.gov' }
+          ],
+          resolution_criteria: 'Official hurricane landfall data from National Hurricane Center',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '14',
+          category_id: 'records',
+          title: '🌡️ Death Valley — Hottest Temperature on Earth in 2025',
+          description: 'Will Death Valley, California record a temperature of 130°F or higher in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.25,
+          volume: 89000,
+          country: 'USA',
+          region: 'West Coast',
+          verification_sources: [
+            { name: 'NOAA', url: 'https://www.noaa.gov' },
+            { name: 'NWS Las Vegas', url: 'https://www.weather.gov/vef' }
+          ],
+          resolution_criteria: 'Official temperature data from National Weather Service Las Vegas',
+          sustainability_fee_percentage: 2.0,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        },
+        {
+          id: '15',
+          category_id: 'records',
+          title: '❄️ Antarctica — Coldest Temperature on Earth in 2025',
+          description: 'Will Antarctica record a temperature of -90°C or lower in 2025?',
+          target_date: '2025-12-31T23:59:59Z',
+          current_price: 0.41,
+          volume: 56000,
+          country: 'Antarctica',
+          region: 'Antarctica',
+          verification_sources: [
+            { name: 'NSIDC', url: 'https://nsidc.org' }
+          ],
+          resolution_criteria: 'Official temperature data from Antarctic research stations',
+          sustainability_fee_percentage: 2.5,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z'
+        }
+      ];
 
-      try {
-        const [marketResponse, pricePointsResponse] = await Promise.all([
-          supabase
-            .from('prediction_markets')
-            .select('*')
-            .eq('id', id)
-            .single(),
-          supabase
-            .from('market_price_points')
-            .select('*')
-            .eq('market_id', id)
-            .order('price_point', { ascending: false })
+      const foundMarket = allMarkets.find(m => m.id === id);
+      if (foundMarket) {
+        setMarket(foundMarket);
+        setPricePoints([
+          { id: '1', market_id: foundMarket.id, price_point: 0.75, probability: 75, volume: 1000, created_at: '2024-01-01T00:00:00Z' },
+          { id: '2', market_id: foundMarket.id, price_point: 0.74, probability: 74, volume: 800, created_at: '2024-01-01T00:00:00Z' },
+          { id: '3', market_id: foundMarket.id, price_point: 0.76, probability: 76, volume: 1200, created_at: '2024-01-01T00:00:00Z' }
         ]);
-
-        if (marketResponse.error) throw marketResponse.error;
-        if (pricePointsResponse.error) throw pricePointsResponse.error;
-
-        setMarket(marketResponse.data);
-        setPricePoints(pricePointsResponse.data || []);
-      } catch (error) {
-        console.error('Error fetching market data:', error);
-      } finally {
-        setLoading(false);
+      } else {
+        setMarket(null);
+        setPricePoints([]);
       }
+      setLoading(false);
     }
 
     fetchMarketData();
   }, [id]);
 
   const handleTrade = (amount: number) => {
-    if (!market) return;
-    console.log(`${tradeType === 'buy' ? 'Buying' : 'Selling'} $${amount} worth of shares`);
-    // Implement actual trading logic here
+    console.log(`Buying $${amount} worth of shares`);
+    // Simulate trade processing
+    setTimeout(() => {
+      console.log('Trade completed successfully');
+    }, 1000);
   };
 
   const handlePlaceOrder = (type: 'buy' | 'sell', price: number, size: number) => {
-    console.log(`Placing ${type} order: ${size} shares at $${price}`);
-    // Implement order placement logic here
+    console.log(`${type} order placed: ${size} shares at $${price}`);
+    // Simulate order placement
+    setTimeout(() => {
+      console.log('Order placed successfully');
+    }, 1000);
   };
 
   if (loading) {
@@ -350,6 +907,10 @@ export function MarketPage() {
                   type={tradeType}
                   currentPrice={market.current_price}
                   onTrade={handleTrade}
+                  isWalletConnected={true} // Mock connected state
+                  userAddress="0x1234567890123456789012345678901234567890" // Mock address
+                  marketId={market.id}
+                  marketTitle={market.title}
                 />
 
                 <PricePoints 

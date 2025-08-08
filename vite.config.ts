@@ -11,6 +11,12 @@ export default defineConfig({
     // Ensure environment variables are properly handled
     'process.env': {}
   },
+  server: {
+    headers: {
+      // Override any CSP headers to allow Web3Modal eval
+      'Content-Security-Policy': 'default-src * \'unsafe-inline\' \'unsafe-eval\' data: blob:;'
+    }
+  },
   build: {
     rollupOptions: {
       output: {

@@ -22,6 +22,7 @@ export interface PredictionMarket {
   current_price: number;
   volume: number;
   country: string;
+  region?: string; // Add region field
   verification_sources: Array<{
     name: string;
     url: string;

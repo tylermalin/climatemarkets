@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DollarSign, Plus, Minus } from 'lucide-react';
+import { TradesService } from '../lib/trades';
 
 interface TradePanelProps {
   type: 'buy' | 'sell';
   currentPrice: number;
   onTrade: (amount: number) => void;
+  isWalletConnected: boolean;
+  userAddress?: string;
+  marketId?: string;
+  marketTitle?: string;
 }
 
-export function TradePanel({ type, currentPrice, onTrade }: TradePanelProps) {
+export function TradePanel({ type, currentPrice, onTrade, isWalletConnected, userAddress }: TradePanelProps) {
   const [amount, setAmount] = useState(20);
   const maxAmount = 100;
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleAmountChange = (value: number) => {
     setAmount(Math.min(Math.max(1, value), maxAmount));
@@ -85,14 +91,63 @@ export function TradePanel({ type, currentPrice, onTrade }: TradePanelProps) {
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => onTrade(amount)}
+          onClick={async () => {
+            if (!isWalletConnected) {
+              alert('Please connect your wallet to trade. You will be prompted to create an account if you don\'t have one.');
+              return;
+            }
+            
+            setIsProcessing(true);
+            try {
+              // Simulate wallet confirmation
+              const confirmed = window.confirm(
+                `Confirm ${type === 'buy' ? 'Buy Yes' : 'Buy No'} order:\n` +
+                `Amount: $${amount}\n` +
+                `Shares: ${(amount / currentPrice).toFixed(2)}\n` +
+                `Wallet: ${userAddress?.slice(0, 6)}...${userAddress?.slice(-4)}`
+              );
+              
+              if (confirmed) {
+                // Execute trade using trades service
+                const tradesService = TradesService.getInstance();
+                const trade = tradesService.executeTrade(
+                  userAddress!,
+                  marketId || 'unknown',
+                  marketTitle || 'Unknown Market',
+                  type,
+                  amount,
+                  currentPrice
+                );
+                
+                // Simulate transaction processing
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                onTrade(amount);
+                alert('Trade executed successfully! Check your dashboard for details.');
+              }
+            } catch (error) {
+              alert('Trade failed. Please try again.');
+              console.error('Trade error:', error);
+            } finally {
+              setIsProcessing(false);
+            }
+          }}
+          disabled={isProcessing}
           className={`w-full py-3 rounded-lg font-medium ${
-            type === 'buy'
-              ? 'bg-green-600 hover:bg-green-700 text-white'
-              : 'bg-red-600 hover:bg-red-700 text-white'
+            isProcessing 
+              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+              : type === 'buy'
+                ? 'bg-green-600 hover:bg-green-700 text-white'
+                : 'bg-red-600 hover:bg-red-700 text-white'
           }`}
         >
-          {type === 'buy' ? 'Buy Yes' : 'Buy No'}
+          {isProcessing 
+            ? 'Processing...' 
+            : !isWalletConnected 
+              ? 'Connect Wallet to Trade'
+              : type === 'buy' 
+                ? 'Buy Yes' 
+                : 'Buy No'
+          }
         </motion.button>
 
         <p className="text-sm text-gray-400 text-center">

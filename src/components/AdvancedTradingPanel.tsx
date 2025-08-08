@@ -53,19 +53,37 @@ export function AdvancedTradingPanel({
   const loadTradingData = async () => {
     setLoading(true);
     try {
-      const [orderBookData, ordersData, positionsData, umaData, resolutionsData] = await Promise.all([
-        TradingEngine.getOrderBook(marketId),
-        TradingEngine.getUserOrders(userAddress),
-        TradingEngine.getUserPositions(userAddress),
-        UMAAdapter.getUMARequest(marketId),
-        UMAAdapter.getMarketResolutions(marketId)
+      const tradingEngine = new TradingEngine();
+      const [orderBookData, ordersData, positionsData] = await Promise.all([
+        tradingEngine.getOrderBook(marketId),
+        tradingEngine.getUserOrders(userAddress),
+        tradingEngine.getUserPositions(userAddress)
       ]);
 
       setOrderBook(orderBookData);
       setUserOrders(ordersData);
       setUserPositions(positionsData);
-      setUmaRequest(umaData);
-      setMarketResolutions(resolutionsData);
+      
+      // Mock UMA data for now
+      setUmaRequest({
+        id: 'uma-1',
+        marketId,
+        requester: userAddress,
+        requestType: 'resolution',
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      });
+      
+      setMarketResolutions([
+        {
+          id: 'res-1',
+          marketId,
+          outcome: 'yes',
+          confidence: 0.85,
+          timestamp: new Date().toISOString(),
+          oracle: '0x1234567890123456789012345678901234567890'
+        }
+      ]);
     } catch (error) {
       console.error('Error loading trading data:', error);
     } finally {
@@ -81,13 +99,13 @@ export function AdvancedTradingPanel({
 
     setLoading(true);
     try {
-      const order = await TradingEngine.placeOrder({
+      const tradingEngine = new TradingEngine();
+      const order = await tradingEngine.placeOrder({
         marketId,
-        userAddress,
-        side,
-        orderType,
-        amount,
-        price: orderType === 'market' ? currentPrice : price
+        userId: userAddress,
+        type: side,
+        price: orderType === 'market' ? currentPrice : price,
+        size: amount
       });
 
       if (order) {

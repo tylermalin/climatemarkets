@@ -10,6 +10,17 @@ interface FeaturedMarketProps {
 }
 
 export function FeaturedMarket({ market }: FeaturedMarketProps) {
+  // Safety check for undefined market
+  if (!market) {
+    return (
+      <div className="relative min-h-[400px] flex items-center justify-center bg-gradient-to-br from-blue-900/20 via-purple-900/20 to-pink-900/20 rounded-2xl">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">Loading Featured Market...</h2>
+          <p className="text-gray-300">Please wait while we load the latest market data.</p>
+        </div>
+      </div>
+    );
+  }
   const [showInfoModal, setShowInfoModal] = useState(false);
 
   return (
@@ -210,7 +221,7 @@ export function FeaturedMarket({ market }: FeaturedMarketProps) {
                     <Globe className="h-5 w-5 text-purple-400 mr-2" />
                     <span className="text-white font-medium">Category</span>
                   </div>
-                  <p className="text-lg text-purple-400 capitalize">{market.category}</p>
+                  <p className="text-lg text-purple-400 capitalize">{market.category_id}</p>
                 </div>
                 
                 <div className="bg-gray-800/50 rounded-lg p-4">
