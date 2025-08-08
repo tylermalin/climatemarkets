@@ -6,7 +6,7 @@ export const config = createConfig(
   {
     transport: alchemy({
       // Replace with your API key from Alchemy Dashboard
-      apiKey: "YOUR_API_KEY",
+      apiKey: "alcht_ibGcrP7Kpnqt4DOccBtkHwZxCLQbYH",
     }),
     chain: base,
     ssr: true,
