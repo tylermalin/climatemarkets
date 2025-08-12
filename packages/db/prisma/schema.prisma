@@ -1,0 +1,178 @@
+// Prisma schema for Helpful Co-op OS
+// Defines core entities for cooperative platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String?
+
+  memberships Membership[]
+  reviews     ToolReview[]
+  votes       Vote[]
+  pledges     Pledge[]
+  orders      Order[]
+}
+
+model Organization {
+  id          String      @id @default(cuid())
+  name        String
+  type        String
+  jurisdiction String?
+  createdAt   DateTime    @default(now())
+
+  members     Membership[]
+  proposals   Proposal[]
+  meetings    Meeting[]
+  listings    Listing[]
+  groupBuys   GroupBuy[]
+}
+
+model Membership {
+  id            String @id @default(cuid())
+  orgId         String
+  userId        String
+  class         String @default("member")
+  votingRights  Boolean @default(true)
+  role          String @default("member")
+  status        String @default("active")
+
+  organization  Organization @relation(fields: [orgId], references: [id])
+  user          User         @relation(fields: [userId], references: [id])
+  votes         Vote[]
+  pledges       Pledge[]
+
+  @@unique([orgId, userId])
+}
+
+model Proposal {
+  id        String   @id @default(cuid())
+  orgId     String
+  title     String
+  body      Json
+  type      String
+  status    String   @default("draft")
+  quorum    Int      @default(20)
+  opensAt   DateTime?
+  closesAt  DateTime?
+  createdBy String
+
+  organization Organization @relation(fields: [orgId], references: [id])
+  votes        Vote[]
+}
+
+model Vote {
+  id          String @id @default(cuid())
+  proposalId  String
+  memberId    String
+  choice      String
+  weight      Float  @default(1)
+  createdAt   DateTime @default(now())
+
+  proposal    Proposal @relation(fields: [proposalId], references: [id])
+  member      Membership @relation(fields: [memberId], references: [id])
+
+  @@unique([proposalId, memberId])
+}
+
+model Meeting {
+  id        String   @id @default(cuid())
+  orgId     String
+  startsAt  DateTime
+  endsAt    DateTime?
+  agenda    Json
+  minutes   Json?
+
+  organization Organization @relation(fields: [orgId], references: [id])
+}
+
+model Tool {
+  id           String  @id @default(cuid())
+  name         String
+  category     String
+  tags         String[]
+  ossUrl       String?
+  vendorUrl    String?
+  coopFriendly Boolean @default(true)
+  description  String
+  rating       Float   @default(0)
+
+  reviews      ToolReview[]
+}
+
+model ToolReview {
+  id      String @id @default(cuid())
+  toolId  String
+  userId  String
+  rating  Int
+  body    String
+
+  tool    Tool @relation(fields: [toolId], references: [id])
+  user    User @relation(fields: [userId], references: [id])
+}
+
+model Listing {
+  id             String @id @default(cuid())
+  orgId          String?
+  vendorId       String?
+  kind           String
+  title          String
+  description    String
+  priceCents     Int
+  coopDiscountPct Int @default(0)
+  status         String @default("active")
+
+  organization   Organization? @relation(fields: [orgId], references: [id])
+  orders         Order[]
+  groupBuys      GroupBuy[]
+}
+
+model Order {
+  id          String @id @default(cuid())
+  buyerId     String
+  listingId   String
+  qty         Int    @default(1)
+  amountCents Int
+  status      String @default("pending")
+  escrowId    String?
+
+  buyer       User   @relation(fields: [buyerId], references: [id])
+  listing     Listing @relation(fields: [listingId], references: [id])
+}
+
+model GroupBuy {
+  id         String @id @default(cuid())
+  listingId  String
+  orgId      String
+  targetQty  Int
+  pledgedQty Int @default(0)
+  status     String @default("collecting")
+  escrowId   String?
+  deadline   DateTime
+
+  listing    Listing @relation(fields: [listingId], references: [id])
+  organization Organization @relation(fields: [orgId], references: [id])
+  pledges    Pledge[]
+}
+
+model Pledge {
+  id          String @id @default(cuid())
+  groupBuyId  String
+  memberId    String
+  qty         Int
+  amountCents Int
+  status      String @default("authorized")
+
+  groupBuy    GroupBuy   @relation(fields: [groupBuyId], references: [id])
+  member      Membership @relation(fields: [memberId], references: [id])
+  user        User       @relation(fields: [memberId], references: [id])
+}
+
