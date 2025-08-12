@@ -1,0 +1,9 @@
+{
+  "name": "@helpful/api",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "@trpc/server": "^10.45.2",
+    "zod": "^3.22.4"
+  }
+}

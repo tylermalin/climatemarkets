@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "jsx": "preserve",
+    "moduleResolution": "node",
+    "target": "es2017",
+    "types": ["node"]
+  },
+  "include": ["app/**/*", "../packages/ui/**/*", "next-env.d.ts"],
+  "exclude": ["node_modules"]
+}
